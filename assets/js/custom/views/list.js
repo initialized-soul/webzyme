@@ -1,6 +1,7 @@
 var ListView = Backbone.View.extend({
 	
 	events: {
+		'touchmove' : 'mouseoverSequence',
 		'mouseover' : 'mouseoverSequence',
 		'mouseout' : 'mouseoutSequence',
 		'click' : 'removeHighlightClick'
