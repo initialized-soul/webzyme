@@ -1,0 +1,17 @@
+.sequence-highlight {
+	background: rgba(0,0,0,0.2);
+	padding: 3px;
+	border-radius: 6px;
+}
+
+.sequence-highlight-hover {
+	background: rgba($brand-success, 0.7)
+}
+
+.wordwrap { 
+   white-space: pre-wrap;      /* CSS3 */   
+   white-space: -moz-pre-wrap; /* Firefox */    
+   white-space: -pre-wrap;     /* Opera <7 */   
+   white-space: -o-pre-wrap;   /* Opera 7 */    
+   word-wrap: break-word;      /* IE */
+}
