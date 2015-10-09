@@ -1,13 +1,12 @@
 var ListView = Backbone.View.extend({
 	
 	events: {
-		'touchmove' : 'mouseoverSequence',
-		'mouseover' : 'mouseoverSequence',
-		'mouseout' : 'mouseoutSequence',
-		'click' : 'removeHighlightClick'
 	},
 
 	initialize: function() {
+		this.$el.on('vclick', $.proxy(this.removeHighlightClick, this));
+		this.$el.on('vmouseover', $.proxy(this.mouseoverSequence, this));
+		this.$el.on('vmouseout', $.proxy(this.mouseoutSequence, this));
 		this.listenTo(this.collection, 'add remove', this.render);
 		this.listenTo(this.collection, 'reset', this.removeAllHighlights);
 	},
@@ -30,6 +29,7 @@ var ListView = Backbone.View.extend({
 	},
 
 	mouseoverSequence: function(event) {
+		console.log(this);
 		this.mouseHoverSequence(event, true);
 	},
 
