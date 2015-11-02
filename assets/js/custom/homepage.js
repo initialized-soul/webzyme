@@ -3,14 +3,35 @@ $(document).ready(function(){
 	// create a new collection for sequence highlights
 	var highlights = new Backbone.Collection();
 
+	// Create a new Backbone model for the current sequence
+	var sequence = new Backbone.Model({
+		name: '"Eukaryotic" Green Fluorescent Protein (eGFP)',
+		sequence: 'ATGGTGAGCAAGGGCGAGGAGCTGTTCACCGGGGTGGTGCCCATCCTGGTCGAGCTGGACGGCGACGTAAACGGCCACAA \
+				GTTCAGCGTGTCCGGCGAGGGCGAGGGCGATGCCACCTACGGCAAGCTGACCCTGAAGTTCATCTGCACCACCGGCAAGC \
+				TGCCCGTGCCCTGGCCCACCCTCGTGACCACCCTGACCTACGGCGTGCAGTGCTTCAGCCGCTACCCCGACCACATGAAG \
+				CAGCACGACTTCTTCAAGTCCGCCATGCCCGAAGGCTACGTCCAGGAGCGCACCATCTTCTTCAAGGACGACGGCAACTA \
+				CAAGACCCGCGCCGAGGTGAAGTTCGAGGGCGACACCCTGGTGAACCGCATCGAGCTGAAGGGCATCGACTTCAAGGAGG \
+				ACGGCAACATCCTGGGGCACAAGCTGGAGTACAACTACAACAGCCACAACGTCTATATCATGGCCGACAAGCAGAAGAAC \
+				GGCATCAAGGTGAACTTCAAGATCCGCCACAACATCGAGGACGGCAGCGTGCAGCTCGCCGACCACTACCAGCAGAACAC \
+				CCCCATCGGCGACGGCCCCGTGCTGCTGCCCGACAACCACTACCTGAGCACCCAGTCCGCCCTGAGCAAAGACCCCAACG \
+				AGAAGCGCGATCACATGGTCCTGCTGGAGTTCGTGACCGCCGCCGGGATCACTCTCGGCATGGACGAGCTGTACAAG'
+	});
+
+	// New well area for sequence properties
+	new SequencePanelView({
+		el: '#div_sequence_panel',
+		model: sequence
+	});
+
 	// New textarea view for sequences
-	new TextAreaView({
-		el: '#textarea_sequence',
+	new SequenceView({
+		el: '#span_sequence',
+		model: sequence,
 		collection: highlights
 	});
 
 	// New list view for sequence highlights
-	new ListView({
+	new HighlightListView({
 		el: '#div_highlights',
 		collection: highlights
 	});

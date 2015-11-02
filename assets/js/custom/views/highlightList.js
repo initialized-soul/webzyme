@@ -1,4 +1,4 @@
-var ListView = Backbone.View.extend({
+var HighlightListView = Backbone.View.extend({
 	
 	events: {
 	},
@@ -29,7 +29,6 @@ var ListView = Backbone.View.extend({
 	},
 
 	mouseoverSequence: function(event) {
-		console.log(this);
 		this.mouseHoverSequence(event, true);
 	},
 

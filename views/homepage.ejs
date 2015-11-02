@@ -1,7 +1,14 @@
 <!-- Default home page -->
 <div class="container">
-    <div class="well wordwrap" id="textarea_sequence" contenteditable="true">
-        ATTGGCCCCCTTG
+    <div class="panel panel-default" id="div_sequence_panel">
+        <div id="div_sequence_name" class="panel-heading wordwrap">
+            <span class="glyphicon glyphicon-chevron-right"></span>
+            <span id="span_sequence_name"></span>
+        </div>
+        <div id="div_sequence" class="panel-body" contenteditable="true">
+            <span id="span_sequence_numbers"></span>
+            <span id="span_sequence" class="sequence"></span>
+        </div>
     </div>
 
     <div id="div_highlights" class="list-group wordwrap">

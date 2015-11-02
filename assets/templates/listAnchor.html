@@ -1,8 +1,10 @@
 <a href="#" class="list-group-item" value="<%= highlight.get('id') %>">
-  <b><%= highlight.get('text') %></b>
+  <div style="display: inline-block; width:90%">
+      <b><%= highlight.get('text') %></b>
+  </div>
   <span class="badge badge-danger"> 
-    <b><%= highlight.get('start') + 1 %></b>&nbsp;
-    <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>&nbsp;
+    <b><%= highlight.get('start') + 1 %></b>
+    <span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
     <b><%= highlight.get('end') %></b> 
   </span>
 </a>

@@ -1,4 +1,4 @@
-var TextAreaView = Backbone.View.extend({
+var SequenceView = Backbone.View.extend({
 	
 	events: {
 		'mouseup': 'highlight',
@@ -11,7 +11,8 @@ var TextAreaView = Backbone.View.extend({
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
 		this.listenTo(this.collection, 'reset', this.removeAllSpans);
-		this.cleanText();
+		this.calculateLineCapacity();
+		this.printSequence();
 	},
  
  	keystroke: function(event) {
@@ -36,6 +37,7 @@ var TextAreaView = Backbone.View.extend({
  		var origText = F.Maybe(el.childNodes[0].nodeValue).def('');
  		el.childNodes[0].nodeValue = F.insertAt(this.getSelection().focusOffset, text, origText);
  		this.collection.reset();
+ 		this.refreshModel();
  		return false;
  	},
 
@@ -54,6 +56,16 @@ var TextAreaView = Backbone.View.extend({
  			return focusNode;
  		}
  		return focusNode.parentElement;
+ 	},
+
+ 	calculateLineCapacity: function() {
+ 		this.el.innerHTML = 'A';
+ 		var initialHeight = this.el.offsetHeight;
+ 		while (this.el.offsetHeight <= initialHeight){
+ 			this.el.innerHTML += 'A';
+ 		}
+ 		this.charsPerLine = this.el.innerHTML.length - 1;
+ 		this.el.innerHTML = '';
  	},
 
 	highlight: function() {
@@ -78,30 +90,26 @@ var TextAreaView = Backbone.View.extend({
 	},
 
 	getGlobalOffset: function(node, offset) {
-		var tree = this.$el.find('*').toArray();
-		var index = $.inArray(node.parentElement, tree);
-		var beforeSpans = R.take(index, tree);
-		var sequence = R.reduce(function(seq, el){
-			return seq + F.Maybe(el.childNodes[0].nodeValue).def('');
-		}, '', beforeSpans);
+		var that = this;
+		var children = this.el.childNodes;
+		var index = R.max(0, $.inArray(node, children));
+		var beforeSpans = R.take(index, children);
+
+		var sequence = this.reduceSequence(beforeSpans, function(el){
+			var nodes = R.prepend(el, el.childNodes);
+			return that.reduceSequence(nodes, function(node){return node.nodeValue;});
+		})
 		return sequence.length + offset;
+	},
+
+	reduceSequence: function(xs, fn) {
+		return R.reduce(function(seq, x){
+			return seq + F.Maybe(fn(x)).def('');
+		}, '', xs);
 	},
 
 	generateId: function(range) {
 		return 'Span-' + range.join('-');
-	},
-
-	removeAllSpans: function(models, options) {
-		var removedModels = options.previousModels;
-		this.removeSpan(removedModels);
-	},
-
-	removeSpan: function(models) {
-		var that = this;
-		R.map(function(model){
-			that.getSpans(model).contents().unwrap();			
-		}, F.array(models));
-		this.cleanText();
 	},
 
 	highlightSpan: function(models) {
@@ -139,9 +147,31 @@ var TextAreaView = Backbone.View.extend({
 	    }
 	},
 
+	refreshModel: function() {
+		this.model.set('sequence', this.el.textContent);
+	},
+
+	printSequence: function() {
+		var cleanSequence = this.regexClean(this.model.get('sequence'));
+		this.$el.html(cleanSequence);
+	},
+
+	removeAllSpans: function(models, options) {
+		var removedModels = options.previousModels;
+		this.removeSpan(removedModels);
+	},
+
+	removeSpan: function(models) {
+		var that = this;
+		R.map(function(model){
+			that.getSpans(model).contents().unwrap();			
+		}, F.array(models));
+		this.cleanText();
+	},
+	
 	cleanText: function() {
 		var that = this;
-		this.simplifyText(this.el);
+		this.el.normalize(); // concat broken text
 		this.$el.find('*').each(function(index, el){
 			that.simplifyText(el);
 		});
