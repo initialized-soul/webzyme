@@ -166,8 +166,6 @@ var SequenceView = Backbone.View.extend({
 
 	printSequence: function() {
 		this.collection.reset();
-		//var cleanSequence = this.regexClean(this.model.get('sequence'));
-		//this.$el.html(cleanSequence);
 		this.el.innerHTML = this.model.get('sequence');
 		this.printLineNumbers();
 	},
