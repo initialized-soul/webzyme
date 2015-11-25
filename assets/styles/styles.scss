@@ -1,5 +1,26 @@
-.sequence {
+.sequence-font {
 	font-family: 'Lucida Console', Monaco, monospace;
+}
+
+.sequence {
+	float: right;
+	width: 90%;
+}
+
+.sequence-positions {
+	width: 5%;
+	word-wrap: break-word;
+}
+
+.sequence-positions-left {
+	@extend .sequence-positions;
+	float: left;
+}
+
+.sequence-positions-right {
+	@extend .sequence-positions;
+	float: right;
+	text-align: right;
 }
 
 .sequence-highlight {
@@ -13,4 +34,12 @@
 
 .wordwrap { 
    word-wrap: break-word;
+}
+
+.unselectable {
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+	user-select: none;
 }

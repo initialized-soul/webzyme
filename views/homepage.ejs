@@ -5,9 +5,16 @@
             <span class="glyphicon glyphicon-chevron-right"></span>
             <span id="span_sequence_name"></span>
         </div>
-        <div id="div_sequence" class="panel-body" contenteditable="true">
-            <span id="span_sequence_numbers"></span>
-            <span id="span_sequence" class="sequence"></span>
+        <div id="div_sequence_container" class="panel-body">
+            <div class="sequence-positions-left sequence-font unselectable">
+                <b><span id="span_sequence_positions_left"></span></b>
+            </div>
+            <div class="sequence-positions-right sequence-font">
+                <b><span id="span_sequence_positions_right"></span></b>
+            </div>
+            <div id="div_sequence" class="sequence sequence-font unselectable">
+                <span id="span_sequence" contenteditable="true"></span>
+            </div>
         </div>
     </div>
 

@@ -78,6 +78,10 @@ var F = {
         }
         return Something(x);
     },
+    // DNA :: String -> String
+    DNA: function(x){
+        return F.Maybe(x).maybe('', x => x.replace(/[^ATGC]/g, ''));
+    },
     // array :: a | [a] -> [a]
     array: function(x){
         return [].concat(x);

@@ -1,25 +1,53 @@
 var SequenceView = Backbone.View.extend({
 	
+	defaults: {
+		basicKeys: [
+			8,  // backspace
+			35, // end
+			36, // home
+			37, // left
+			38, // up
+			39, // right
+			40, // down
+			46  // delete
+		],
+		ctrlKeys: [
+			35, // home
+			36, // end
+			67, // c (copy)
+			86, // v (paste)
+			88  // x (cut)
+		]
+	},
+
+	constructor: function (options) {
+        this.options = _.extend({}, this.defaults, options);
+        Backbone.View.prototype.constructor.apply(this, arguments);
+    },
+
 	events: {
 		'mouseup': 'highlight',
 		'keydown': 'keystroke',
-		'paste': 'userPaste'
+		'keyup': 'refreshModel',
+		'paste': 'refreshModel'
 	},
 
-	initialize: function() {
+	initialize: function(options) {
+		this.lineNumsLeftEl = document.getElementById(this.options.lineNumsLeftEl);
+		this.lineNumsRightEl = document.getElementById(this.options.lineNumsRightEl);
+		this.listenTo(this.model, 'change', this.printSequence);
 		this.listenTo(this.collection, 'add', this.highlightSpan);
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
 		this.listenTo(this.collection, 'reset', this.removeAllSpans);
 		this.calculateLineCapacity();
-		this.printSequence();
 	},
  
  	keystroke: function(event) {
- 		if (F.inArray(event.keyCode, [8, 46, 35, 36, 37, 38, 39, 40])){ // Allow basic keys
+ 		if (F.inArray(event.keyCode, this.options.basicKeys)){
  			return true;
  		} else if (event.ctrlKey || event.metaKey){
- 			if (!F.inArray(event.keyCode, [35, 36, 67, 86, 88])){ // Allow home, end, cut, copy, paste
+ 			if (!F.inArray(event.keyCode, this.options.ctrlKeys)){
  				return false;
  			}
  		} else if (event.keyCode === 13){ // Disallow enter
@@ -31,19 +59,8 @@ var SequenceView = Backbone.View.extend({
     	}
  	},
 
- 	userPaste: function(event) {
- 		var text = this.getClipboardText(event);
- 		var el = this.getFocusedSpan();
- 		var origText = F.Maybe(el.childNodes[0].nodeValue).def('');
- 		el.childNodes[0].nodeValue = F.insertAt(this.getSelection().focusOffset, text, origText);
- 		this.collection.reset();
- 		this.refreshModel();
- 		return false;
- 	},
-
- 	getClipboardText: function(event) {
- 		var text = event.originalEvent.clipboardData.getData('text/plain');
- 		return this.regexClean(text);
+ 	refreshModel: function() {
+ 		this.model.set('sequence', this.el.textContent);
  	},
 
  	// if the user cursor is on a text region then just return the parentElement,
@@ -117,13 +134,13 @@ var SequenceView = Backbone.View.extend({
 		R.map(function(model){
 			var rangeEl = model.get('rangeEl');
 			var selectionContents = rangeEl.extractContents();
-			var span = that.createSpan(selectionContents, model.get('id'));
+			var span = that.createSequenceSpan(selectionContents, model.get('id'));
 			rangeEl.insertNode(span);
 		}, F.array(models));
 		this.clearSelection();
 	},
 
-	createSpan: function(contents, id) {
+	createSequenceSpan: function(contents, id) {
 		var span = document.createElement('span');
 		span.appendChild(contents);
 		span.setAttribute('class', 'sequence-highlight');
@@ -147,13 +164,29 @@ var SequenceView = Backbone.View.extend({
 	    }
 	},
 
-	refreshModel: function() {
-		this.model.set('sequence', this.el.textContent);
+	printSequence: function() {
+		this.collection.reset();
+		//var cleanSequence = this.regexClean(this.model.get('sequence'));
+		//this.$el.html(cleanSequence);
+		this.el.innerHTML = this.model.get('sequence');
+		this.printLineNumbers();
 	},
 
-	printSequence: function() {
-		var cleanSequence = this.regexClean(this.model.get('sequence'));
-		this.$el.html(cleanSequence);
+	printLineNumbers: function() {
+		this.lineNumsLeftEl.innerHTML = '1<br>';
+		this.lineNumsRightEl.innerHTML = '';
+		for (var i = 1; i < this.el.getClientRects().length; i++){
+			var lineLength = this.getLineLength(i);
+			this.lineNumsLeftEl.innerHTML += (lineLength + 1) + '<br>';
+			this.lineNumsRightEl.innerHTML += lineLength + '<br>';
+		}
+		this.lineNumsRightEl.innerHTML += this.model.get('sequence').length;
+	},
+
+	getLineLength: function(row) {
+		var seq = this.model.get('sequence');
+		var x = row * this.charsPerLine;
+		return (seq.length / x) > 1 ? x : (seq.length % x);
 	},
 
 	removeAllSpans: function(models, options) {
@@ -186,14 +219,10 @@ var SequenceView = Backbone.View.extend({
 			}, 
 			function(children){
 				F.Maybe(children.nodeValue).bind(function(text){
-					el.childNodes[0].nodeValue = that.regexClean(text);
+					el.childNodes[0].nodeValue = F.DNA(text);
 				});				
 			}
 		);
-	},
-
-	regexClean: function(text){
-		return text.replace(/[^ATGC]/g, '');
 	},
 
 	mouseover: function(models) {
