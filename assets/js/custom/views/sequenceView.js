@@ -35,7 +35,7 @@ var SequenceView = Backbone.View.extend({
 	initialize: function(options) {
 		this.lineNumsLeftEl = document.getElementById(this.options.lineNumsLeftEl);
 		this.lineNumsRightEl = document.getElementById(this.options.lineNumsRightEl);
-		this.listenTo(this.model, 'change', this.printSequence);
+		this.listenTo(this.model, 'change', this.onModelChange);
 		this.listenTo(this.collection, 'add', this.highlightSpan);
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
@@ -154,8 +154,12 @@ var SequenceView = Backbone.View.extend({
 	    }
 	},
 
-	printSequence: function() {
+	onModelChange: function() {
 		this.collection.reset();
+		this.printSequence();
+	},
+	
+	printSequence: function() {
 		this.el.innerHTML = this.model.get('sequence');
 		this.charsPerLine = D.getLineCapacity(this.el);
 		this.printLineNumbers();
