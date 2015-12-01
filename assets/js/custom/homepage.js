@@ -23,7 +23,7 @@ $(document).ready(function(){
 
 	// New list view for sequence highlights
 	new HighlightListView({
-		el: '#div_highlights',
+		el: '#ul_highlights',
 		collection: highlights
 	});
 

@@ -5,19 +5,23 @@
             <span class="glyphicon glyphicon-chevron-right"></span>
             <span id="span_sequence_name"></span>
         </div>
-        <div id="div_sequence_container" class="panel-body">
-            <div class="sequence-positions-left sequence-font unselectable">
-                <b><span id="span_sequence_positions_left"></span></b>
-            </div>
-            <div class="sequence-positions-right sequence-font">
-                <b><span id="span_sequence_positions_right"></span></b>
-            </div>
-            <div id="div_sequence" class="sequence sequence-font unselectable">
-                <span id="span_sequence" contenteditable="true"></span>
+        <div id="div_sequence_container" class="panel-body container-fluid">
+            <div class="row">
+                <div class="col-xs-2 col-md-1 sequence-font unselectable" style="text-align:right">
+                    <b><span id="span_sequence_positions_left"></span></b>
+                </div>
+                <div id="div_sequence" class="col-xs-8 col-md-10 wordwrap sequence-font">
+                    <span id="span_sequence" contenteditable="true"></span>
+                </div>
+                <div class="col-xs-2 col-md-1 sequence-font unselectable" style="text-align:left">
+                    <b><span id="span_sequence_positions_right"></span></b>
+                </div>
             </div>
         </div>
     </div>
 
-    <div id="div_highlights" class="list-group wordwrap">
+    <div class="wordwrap container-fluid">
+        <ul id="ul_highlights" class="list-group">
+        </ul>
     </div>
 </div>

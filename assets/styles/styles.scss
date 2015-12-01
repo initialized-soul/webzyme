@@ -2,27 +2,6 @@
 	font-family: 'Lucida Console', Monaco, monospace;
 }
 
-.sequence {
-	float: right;
-	width: 90%;
-}
-
-.sequence-positions {
-	width: 5%;
-	word-wrap: break-word;
-}
-
-.sequence-positions-left {
-	@extend .sequence-positions;
-	float: left;
-}
-
-.sequence-positions-right {
-	@extend .sequence-positions;
-	float: right;
-	text-align: right;
-}
-
 .sequence-highlight {
 	background: rgba(0,0,0,0.2);
 	border-radius: 6px;

@@ -40,7 +40,7 @@ var SequenceView = Backbone.View.extend({
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
 		this.listenTo(this.collection, 'reset', this.removeAllSpans);
-		this.calculateLineCapacity();
+		$(window).resize(_.bind(this.printSequence, this));
 	},
  
  	keystroke: function(event) {
@@ -73,16 +73,6 @@ var SequenceView = Backbone.View.extend({
  			return focusNode;
  		}
  		return focusNode.parentElement;
- 	},
-
- 	calculateLineCapacity: function() {
- 		this.el.innerHTML = 'A';
- 		var initialHeight = this.el.offsetHeight;
- 		while (this.el.offsetHeight <= initialHeight){
- 			this.el.innerHTML += 'A';
- 		}
- 		this.charsPerLine = this.el.innerHTML.length - 1;
- 		this.el.innerHTML = '';
  	},
 
 	highlight: function() {
@@ -167,6 +157,7 @@ var SequenceView = Backbone.View.extend({
 	printSequence: function() {
 		this.collection.reset();
 		this.el.innerHTML = this.model.get('sequence');
+		this.charsPerLine = D.getLineCapacity(this.el);
 		this.printLineNumbers();
 	},
 
