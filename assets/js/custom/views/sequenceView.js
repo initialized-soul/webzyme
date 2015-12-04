@@ -81,7 +81,7 @@ var SequenceView = Backbone.View.extend({
 		var range = this.getHighlightedRange(selection);
 		F.Maybe(selection.toString()).bind(function(text){
 			that.collection.add({
-				'id' : that.generateId(range), //prevents duplicates
+				'id' : that.generateSpanId(range), //prevents duplicates
 				'start' : range[0],
 				'end' : range[1],
 				'text' : text,
@@ -96,26 +96,17 @@ var SequenceView = Backbone.View.extend({
 		return [Math.min(a,b), Math.max(a,b)];
 	},
 
-	getGlobalOffset: function(node, offset) {
-		var that = this;
-		var children = this.el.childNodes;
-		var index = R.max(0, $.inArray(node, children));
+	getGlobalOffset: function(textNode, offset) {
+		var children = Dom.getFlattenedChildren(this.el);
+		var index = R.max(0, $.inArray(textNode, children));
 		var beforeSpans = R.take(index, children);
-
-		var sequence = this.reduceSequence(beforeSpans, function(el){
-			var nodes = R.prepend(el, el.childNodes);
-			return that.reduceSequence(nodes, function(node){return node.nodeValue;});
-		})
+		var sequence = this.getSequenceFromSpans(beforeSpans);
 		return sequence.length + offset;
 	},
 
-	reduceSequence: function(xs, fn) {
-		return R.reduce(function(seq, x){
-			return seq + F.Maybe(fn(x)).def('');
-		}, '', xs);
-	},
+	getSequenceFromSpans: R.compose(R.join(''), R.pluck('nodeValue')),
 
-	generateId: function(range) {
+	generateSpanId: function(range) {
 		return 'Span-' + range.join('-');
 	},
 
@@ -161,7 +152,7 @@ var SequenceView = Backbone.View.extend({
 	
 	printSequence: function() {
 		this.el.innerHTML = this.model.get('sequence');
-		this.charsPerLine = D.getLineCapacity(this.el);
+		this.charsPerLine = Dom.getLineCapacity(this.el);
 		this.printLineNumbers();
 	},
 
