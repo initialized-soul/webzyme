@@ -26,13 +26,14 @@ var SequenceView = Backbone.View.extend({
     },
 
 	events: {
-		'mouseup': 'highlight',
-		'keydown': 'keystroke',
-		'keyup': 'refreshModel',
+		'keydown': 'keyDown',
+		'mouseup': 'mouseUp',
+		'keyup': 'keyUp',
 		'paste': 'refreshModel'
 	},
 
 	initialize: function(options) {
+		this.currentPositionEl = document.getElementById(this.options.currentPositionEl);
 		this.lineNumsLeftEl = document.getElementById(this.options.lineNumsLeftEl);
 		this.lineNumsRightEl = document.getElementById(this.options.lineNumsRightEl);
 		this.listenTo(this.model, 'change', this.onModelChange);
@@ -43,7 +44,7 @@ var SequenceView = Backbone.View.extend({
 		$(window).resize(_.bind(this.printSequence, this));
 	},
  
- 	keystroke: function(event) {
+ 	keyDown: function(event) {
  		if (F.inArray(event.keyCode, this.options.basicKeys)){
  			return true;
  		} else if (event.ctrlKey || event.metaKey){
@@ -59,23 +60,27 @@ var SequenceView = Backbone.View.extend({
     	}
  	},
 
+ 	mouseUp: function(){
+ 		this.displayCurrentPosition();
+ 		this.executeUserHighlight();
+ 	},
+
+ 	keyUp: function(){
+ 		this.displayCurrentPosition();
+ 		this.refreshModel();
+ 	},
+
  	refreshModel: function() {
  		this.model.set('sequence', this.el.textContent);
  	},
 
- 	// if the user cursor is on a text region then just return the parentElement,
- 	// otherwise if there is no text in the textarea, we have to create an empty text node for pasting
- 	getFocusedSpan: function() {
- 		var focusNode = this.getSelection().focusNode;
- 		if (focusNode === document.getElementById('textarea_sequence')){
- 			var textNode = document.createTextNode('');
- 			focusNode.appendChild(textNode);
- 			return focusNode;
- 		}
- 		return focusNode.parentElement;
+ 	displayCurrentPosition: function() {
+ 		selection = this.getSelection(); 
+ 		var pos = this.getGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		this.currentPositionEl.innerHTML = '<b>' + pos + '</b>';
  	},
 
-	highlight: function() {
+	executeUserHighlight: function() {
 		var that = this;
 		var selection = this.getSelection();
 		var range = this.getHighlightedRange(selection);

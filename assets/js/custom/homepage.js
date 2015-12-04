@@ -15,6 +15,7 @@ $(document).ready(function(){
 	// New textarea view for sequences
 	new SequenceView({
 		el: '#span_sequence',
+		currentPositionEl: 'span_current_position',
 		lineNumsLeftEl: 'span_sequence_positions_left',
 		lineNumsRightEl: 'span_sequence_positions_right',
 		model: sequence,
