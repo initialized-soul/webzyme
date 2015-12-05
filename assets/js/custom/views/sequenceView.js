@@ -40,7 +40,7 @@ var SequenceView = Backbone.View.extend({
 		this.listenTo(this.collection, 'add', this.highlightSpan);
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
-		this.listenTo(this.collection, 'reset', this.removeAllSpans);
+		this.listenTo(this.collection, 'reset', this.printSequence);
 		$(window).resize(_.bind(this.printSequence, this));
 	},
  
@@ -60,12 +60,12 @@ var SequenceView = Backbone.View.extend({
     	}
  	},
 
- 	mouseUp: function(){
+ 	mouseUp: function() {
  		this.displayCurrentPosition();
  		this.executeUserHighlight();
  	},
 
- 	keyUp: function(){
+ 	keyUp: function() {
  		this.displayCurrentPosition();
  		this.refreshModel();
  	},
@@ -124,6 +124,8 @@ var SequenceView = Backbone.View.extend({
 			rangeEl.insertNode(span);
 		}, F.array(models));
 		this.clearSelection();
+		this.cleanText();
+		this.calculateSpanDepths();
 	},
 
 	createSequenceSpan: function(contents, id) {
@@ -178,11 +180,6 @@ var SequenceView = Backbone.View.extend({
 		return (seq.length / x) > 1 ? x : (seq.length % x);
 	},
 
-	removeAllSpans: function(models, options) {
-		var removedModels = options.previousModels;
-		this.removeSpan(removedModels);
-	},
-
 	removeSpan: function(models) {
 		var that = this;
 		R.map(function(model){
@@ -199,19 +196,28 @@ var SequenceView = Backbone.View.extend({
 		});
 	},
 
-	simplifyText: function(el){
+	simplifyText: function(el) {
 		var that = this;
 		el.normalize(); // concat all broken text
 		F.Maybe(el.childNodes[0]).maybeFn(
 			function(){
 				$(el).remove();
 			}, 
-			function(children){
-				F.Maybe(children.nodeValue).bind(function(text){
+			function(firstChild){
+				F.Maybe(firstChild.nodeValue).bind(function(text){
 					el.childNodes[0].nodeValue = F.DNA(text);
 				});				
 			}
 		);
+	},
+
+	calculateSpanDepths: function() {
+		var that = this;
+		this.collection.each(function(model){
+			var span = $('#' + model.get('id'));
+			var depth = span.parentsUntil(that.$el).length;
+			model.set('depth', depth);
+		});
 	},
 
 	mouseover: function(models) {
