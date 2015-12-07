@@ -1,5 +1,5 @@
 var HighlightCollection = Backbone.Collection.extend({
-	
+		
 	initialize: function(models, options) {
 		this.sequenceModel = options.sequenceModel;
 		this.rootModel = new Backbone.Model({
@@ -18,8 +18,8 @@ var HighlightCollection = Backbone.Collection.extend({
 		this.rootModel.set('text', sequence);
 	},
 
-	getDeepestSpan: function(index) {
-		var deepestModel = this.reduce(function(deepest, model){
+	getDeepestHighlight: function(index) {
+		return this.reduce(function(deepest, model){
 			if (model.get('start') <= index && model.get('end') >= index){
 				if (model.get('depth') > deepest.get('depth')){
 					return model;
@@ -27,7 +27,9 @@ var HighlightCollection = Backbone.Collection.extend({
 			}
 			return deepest;
 		}, this.rootModel);
-		return $('#' + deepestModel.get('id'));
 	},
 
+	generateSpanId: function(range) {
+		return 'Span-' + range.join('-');
+	},
 });

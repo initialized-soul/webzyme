@@ -5,6 +5,7 @@ $(document).ready(function(){
 
 	// create a new collection for sequence highlights
 	var highlights = new HighlightCollection(null, {
+		model: HighlightModel,
 		sequenceSpanEl: 'span_sequence',
 		sequenceModel: sequence
 	});
@@ -34,7 +35,8 @@ $(document).ready(function(){
 	// New view to allow searching within the gene sequence
 	new SequenceSearchView({
 		el: '#form_sequence_search',
-		model: sequence
+		model: sequence,
+		collection: highlights
 	});
 
 	// Initialize the sequence model

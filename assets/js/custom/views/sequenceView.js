@@ -86,11 +86,12 @@ var SequenceView = Backbone.View.extend({
 		var range = this.getHighlightedRange(selection);
 		F.Maybe(selection.toString()).bind(function(text){
 			that.collection.add({
-				'id' : that.generateSpanId(range), //prevents duplicates
+				'id' : that.collection.generateSpanId(range), //prevents duplicates
 				'start' : range[0],
 				'end' : range[1],
 				'text' : text,
-				'rangeEl' : selection.getRangeAt(0)
+				'rangeEl' : selection.getRangeAt(0),
+				'type' : 'user'
 			});
 		});
 	},
@@ -111,16 +112,12 @@ var SequenceView = Backbone.View.extend({
 
 	getSequenceFromSpans: R.compose(R.join(''), R.pluck('nodeValue')),
 
-	generateSpanId: function(range) {
-		return 'Span-' + range.join('-');
-	},
-
 	highlightSpan: function(models) {
 		var that = this;
 		R.map(function(model){
 			var rangeEl = model.get('rangeEl');
 			var selectionContents = rangeEl.extractContents();
-			var span = that.createSequenceSpan(selectionContents, model.get('id'));
+			var span = that.createSequenceSpan(selectionContents, model);
 			rangeEl.insertNode(span);
 		}, F.array(models));
 		this.clearSelection();
@@ -128,11 +125,13 @@ var SequenceView = Backbone.View.extend({
 		this.calculateSpanDepths();
 	},
 
-	createSequenceSpan: function(contents, id) {
+	createSequenceSpan: function(contents, model) {
 		var span = document.createElement('span');
 		span.appendChild(contents);
-		span.setAttribute('class', 'sequence-highlight');
-		span.setAttribute('id', id);
+		span.setAttribute('class', 'sequence-highlight-' + model.getCssClass());
+		span.setAttribute('id', model.get('id'));
+		span.setAttribute('data-start', model.get('start'));
+		span.setAttribute('data-end', model.get('end'));
 		return span;
 	},
 
@@ -225,9 +224,9 @@ var SequenceView = Backbone.View.extend({
 		R.map(function(model){
 			var $spans = that.getSpans(model);
 			if (model.get('highlight')){
-				$spans.addClass('sequence-highlight-hover');
+				$spans.addClass('sequence-highlight-hover-' + model.getCssClass());
 			} else {
-				$spans.removeClass('sequence-highlight-hover');
+				$spans.removeClass('sequence-highlight-hover-' + model.getCssClass());
 			}
 		}, F.array(models));
 	},

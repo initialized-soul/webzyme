@@ -1,19 +1,33 @@
-.sequence-font {
-	font-family: 'Lucida Console', Monaco, monospace;
+.sequence-font {font-family: 'Lucida Console', Monaco, monospace;}
+
+.sequence-highlight {border-radius: 6px;}
+
+.sequence-highlight-info {
+	@extend .sequence-highlight;
+	background: rgba($brand-info,0.3);
 }
 
-.sequence-highlight {
-	background: rgba(0,0,0,0.2);
-	border-radius: 6px;
+.sequence-highlight-success {
+	@extend .sequence-highlight;
+	background: rgba($brand-success,0.3);
 }
 
-.sequence-highlight-hover {
-	background: rgba($brand-success, 0.7)
+.sequence-highlight-warning {
+	@extend .sequence-highlight;
+	background: rgba($brand-warning,0.3);
 }
 
-.wordwrap { 
-   word-wrap: break-word;
+.sequence-highlight-danger {
+	@extend .sequence-highlight;
+	background: rgba($brand-danger,0.3);
 }
+
+.sequence-highlight-hover-info {background: rgba($brand-info, 1.0)}
+.sequence-highlight-hover-success {background: rgba($brand-success, 1.0)}
+.sequence-highlight-hover-warning {background: rgba($brand-warning, 1.0)}
+.sequence-highlight-hover-danger {background: rgba($brand-danger, 1.0)}
+
+.wordwrap {word-wrap: break-word;}
 
 .unselectable {
 	-webkit-user-select: none;
