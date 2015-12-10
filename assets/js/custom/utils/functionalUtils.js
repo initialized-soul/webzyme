@@ -81,7 +81,7 @@ var F = {
     // DNA :: String -> String
     DNA: function(x){
         return F.Maybe(x).maybe('', function(x){
-            return x.replace(/[^ATGC]/g, '');
+            return x.replace(/[^ATGCN]/gi, '').toUpperCase();
         });
     },
     // array :: a | [a] -> [a]

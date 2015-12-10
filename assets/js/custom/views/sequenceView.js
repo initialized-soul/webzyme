@@ -33,6 +33,7 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	initialize: function(options) {
+		this.caretPosition = 1;
 		this.currentPositionEl = document.getElementById(this.options.currentPositionEl);
 		this.lineNumsLeftEl = document.getElementById(this.options.lineNumsLeftEl);
 		this.lineNumsRightEl = document.getElementById(this.options.lineNumsRightEl);
@@ -53,9 +54,7 @@ var SequenceView = Backbone.View.extend({
  			}
  		} else if (event.keyCode === 13){ // Disallow enter
       		return false;
-    	} else if (!event.shiftKey){ // Allow only capital letters
-    		return false;
-    	} else if (!F.inArray(event.keyCode, [65, 84, 71, 67])){ // Allow only ATCG
+    	} else if (!F.inArray(event.keyCode, [65, 84, 71, 67, 78])){ // Allow only ATCGN
     		return false;
     	}
  	},
@@ -76,8 +75,8 @@ var SequenceView = Backbone.View.extend({
 
  	displayCurrentPosition: function() {
  		selection = this.getSelection(); 
- 		var pos = this.getGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
- 		this.currentPositionEl.innerHTML = '<b>' + pos + '</b>';
+ 		this.caretPosition = this.getGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		this.currentPositionEl.innerHTML = '<b>' + this.caretPosition + '</b>';
  	},
 
 	executeUserHighlight: function() {
@@ -160,6 +159,7 @@ var SequenceView = Backbone.View.extend({
 		this.el.innerHTML = this.model.get('sequence');
 		this.charsPerLine = Dom.getLineCapacity(this.el);
 		this.printLineNumbers();
+		this.restoreCaretPosition();
 	},
 
 	printLineNumbers: function() {
@@ -179,6 +179,14 @@ var SequenceView = Backbone.View.extend({
 		return (seq.length / x) > 1 ? x : (seq.length % x);
 	},
 
+	restoreCaretPosition: function() {
+		this.el.focus();
+		var range = this.collection.createDocumentRange([this.caretPosition-1, this.caretPosition-1]);
+		var selection = window.getSelection();
+		selection.removeAllRanges();
+		selection.addRange(range);
+	},
+	
 	removeSpan: function(models) {
 		var that = this;
 		R.map(function(model){
