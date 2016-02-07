@@ -27,6 +27,9 @@ var F = {
             bind: function (fn) {
                 return this;
             },
+            onNothing: function (fn) {
+                return fn.call(this);
+            },
             isNothing: function () {
                 return true;
             },
@@ -36,13 +39,13 @@ var F = {
             val: function () {
                 return null;
             },
-            def: function(def){
+            def: function (def){
                 return def;
             },
             maybe: function (def, fn) {
                 return def;
             },
-            maybeFn: function(fn1, fn2){
+            maybeFn: function (fn1, fn2){
                 return fn1.call(this);
             }
         };
@@ -51,6 +54,9 @@ var F = {
             return {
                 bind: function (fn) {
                     return F.Maybe(fn.call(this, x));
+                },
+                onNothing: function (fn) {
+                    return null;
                 },
                 isNothing: function () {
                     return false;
@@ -83,6 +89,10 @@ var F = {
         return F.Maybe(x).maybe('', function(x){
             return x.replace(/[^ATGCN]/gi, '').toUpperCase();
         });
+    },
+    // strip all whitespaces :: String -> String
+    stripWS: function(x) {
+        return x.replace(/ /g, '');
     },
     // array :: a | [a] -> [a]
     array: function(x){

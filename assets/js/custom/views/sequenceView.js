@@ -34,15 +34,16 @@ var SequenceView = Backbone.View.extend({
 
 	initialize: function(options) {
 		this.caretPosition = 1;
+		this.line = {};
 		this.currentPositionEl = document.getElementById(this.options.currentPositionEl);
 		this.lineNumsLeftEl = document.getElementById(this.options.lineNumsLeftEl);
 		this.lineNumsRightEl = document.getElementById(this.options.lineNumsRightEl);
 		this.listenTo(this.model, 'change', this.onModelChange);
-		this.listenTo(this.collection, 'add', this.highlightSpan);
+		this.listenTo(this.collection, 'add', this._highlightSpan);
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
-		this.listenTo(this.collection, 'reset', this.printSequence);
-		$(window).resize(_.bind(this.printSequence, this));
+		this.listenTo(this.collection, 'reset', this.render);
+		$(window).resize(_.bind(this.render, this));
 	},
  
  	keyDown: function(event) {
@@ -75,7 +76,7 @@ var SequenceView = Backbone.View.extend({
 
  	displayCurrentPosition: function() {
  		selection = this.getSelection(); 
- 		this.caretPosition = this.getGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		this.caretPosition = this._getGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
  		this.currentPositionEl.innerHTML = '<b>' + this.caretPosition + '</b>';
  	},
 
@@ -83,12 +84,12 @@ var SequenceView = Backbone.View.extend({
 		var that = this;
 		var selection = this.getSelection();
 		var range = this.getHighlightedRange(selection);
-		F.Maybe(selection.toString()).bind(function(text){
+		F.Maybe(selection.toString()).bind(function(text) {
 			that.collection.add({
 				'id' : that.collection.generateSpanId(range), //prevents duplicates
 				'start' : range[0],
 				'end' : range[1],
-				'text' : text,
+				'text' : F.stripWS(text),
 				'rangeEl' : selection.getRangeAt(0),
 				'type' : 'user'
 			});
@@ -96,22 +97,32 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	getHighlightedRange: function(selection) {
-		var a = this.getGlobalOffset(selection.anchorNode, selection.anchorOffset);
-		var b = this.getGlobalOffset(selection.focusNode, selection.focusOffset);
+		var a = this._getGlobalOffset(selection.anchorNode, selection.anchorOffset);
+		var b = this._getGlobalOffset(selection.focusNode, selection.focusOffset);
 		return [Math.min(a,b), Math.max(a,b)];
 	},
 
-	getGlobalOffset: function(textNode, offset) {
+	_getGlobalOffset: function(textNode, offset) {
 		var children = Dom.getFlattenedChildren(this.el);
 		var index = R.max(0, $.inArray(textNode, children));
 		var beforeSpans = R.take(index, children);
 		var sequence = this.getSequenceFromSpans(beforeSpans);
-		return sequence.length + offset;
+		var cleanOffset = this._getCleanOffset(textNode, offset);
+		return sequence.length + cleanOffset;
 	},
 
-	getSequenceFromSpans: R.compose(R.join(''), R.pluck('nodeValue')),
+	getSequenceFromSpans: R.compose(F.stripWS, R.join(''), R.pluck('nodeValue')),
 
-	highlightSpan: function(models) {
+	_getCleanOffset: function(textNode, offset) {
+		var nSpaces = this._countSpaces(textNode.nodeValue.substr(0, offset));
+		return offset - nSpaces;
+	},
+
+	_countSpaces: function(text) {
+		return text.split(' ').length - 1;
+	},
+
+	_highlightSpan: function(models) {
 		var that = this;
 		R.map(function(model){
 			var rangeEl = model.get('rangeEl');
@@ -120,7 +131,7 @@ var SequenceView = Backbone.View.extend({
 			rangeEl.insertNode(span);
 		}, F.array(models));
 		this.clearSelection();
-		this.cleanText();
+		this._cleanTextNodes();
 		this.calculateSpanDepths();
 	},
 
@@ -152,34 +163,49 @@ var SequenceView = Backbone.View.extend({
 
 	onModelChange: function() {
 		this.collection.reset();
-		this.printSequence();
+		this.render();
 	},
 	
-	printSequence: function() {
-		this.el.innerHTML = this.model.get('sequence');
-		this.charsPerLine = Dom.getLineCapacity(this.el);
-		this.printLineNumbers();
-		this.restoreCaretPosition();
+	render: function() {
+		this.line.nChars = Dom.getLineCapacity(this.el);
+		this.line.nColumns = Math.floor((this.line.nChars - 1) / 9);
+		this._printSequence();
+		this._printLineNumbers();
+		this._restoreCaretPosition();
 	},
 
-	printLineNumbers: function() {
+	_printSequence: function() {
+		this.el.innerHTML = this._getSpacedSequence();
+	},
+
+	_getSpacedSequence: function() {
+		var sequence = this.model.get('sequence').split('');
+		return R.join('', sequence.map(function(char, index) {
+			if ((index + 1) % 10 === 0) {
+				return char + ' ';
+			}
+			return char;
+		}));
+	},
+
+	_printLineNumbers: function() {
 		this.lineNumsLeftEl.innerHTML = '1<br>';
 		this.lineNumsRightEl.innerHTML = '';
 		for (var i = 1; i < this.el.getClientRects().length; i++){
-			var lineLength = this.getLineLength(i);
+			var lineLength = this._getLineLength(i);
 			this.lineNumsLeftEl.innerHTML += (lineLength + 1) + '<br>';
 			this.lineNumsRightEl.innerHTML += lineLength + '<br>';
 		}
 		this.lineNumsRightEl.innerHTML += this.model.get('sequence').length;
 	},
 
-	getLineLength: function(row) {
+	_getLineLength: function(row) {
 		var seq = this.model.get('sequence');
-		var x = row * this.charsPerLine;
+		var x = row * (this.line.nChars - this.line.nColumns);
 		return (seq.length / x) > 1 ? x : (seq.length % x);
 	},
 
-	restoreCaretPosition: function() {
+	_restoreCaretPosition: function() {
 		this.el.focus();
 		var range = this.collection.createDocumentRange([this.caretPosition-1, this.caretPosition-1]);
 		var selection = window.getSelection();
@@ -192,30 +218,26 @@ var SequenceView = Backbone.View.extend({
 		R.map(function(model){
 			that.getSpans(model).contents().unwrap();			
 		}, F.array(models));
-		this.cleanText();
+		this._cleanTextNodes();
 	},
 	
-	cleanText: function() {
+	_cleanTextNodes: function() {
 		var that = this;
-		this.el.normalize(); // concat broken text
-		this.$el.find('*').each(function(index, el){
-			that.simplifyText(el);
+		this._concatenateBrokenText(this.el);
+		this.$el.find('*').each(function(index, el) {
+			that._simplifyNode(el);
 		});
 	},
 
-	simplifyText: function(el) {
-		var that = this;
-		el.normalize(); // concat all broken text
-		F.Maybe(el.childNodes[0]).maybeFn(
-			function(){
-				$(el).remove();
-			}, 
-			function(firstChild){
-				F.Maybe(firstChild.nodeValue).bind(function(text){
-					el.childNodes[0].nodeValue = F.DNA(text);
-				});				
-			}
-		);
+	_simplifyNode: function(el) {
+		this._concatenateBrokenText(el);
+		F.Maybe(el.childNodes[0]).onNothing(function() {
+			el.parentNode.removeChild(el);
+		});
+	},
+
+	_concatenateBrokenText: function(el) {
+		el.normalize();
 	},
 
 	calculateSpanDepths: function() {
