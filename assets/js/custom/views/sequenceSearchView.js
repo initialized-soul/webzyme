@@ -6,7 +6,7 @@ var SequenceSearchView = Backbone.View.extend({
 	},
 
 	initialize: function(options) {
-		this.inputEl = this.$el.find('input').first();
+		this.inputEl = this.$el.find('input').get(0);
 	},
  
  	keyUp: function(event) {
@@ -16,7 +16,7 @@ var SequenceSearchView = Backbone.View.extend({
  	},
 
 	search: function() {
-		F.Maybe(this._getCleanSearchText()).bind(this._performMatch);
+		F.Maybe(this._getCleanSearchText()).bind(this._performMatch.bind(this));
 	},
 
 	_getCleanSearchText: function() {

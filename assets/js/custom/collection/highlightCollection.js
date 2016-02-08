@@ -22,8 +22,8 @@ var HighlightCollection = Backbone.Collection.extend({
 		var rangeEl = document.createRange();
 		var startModel = this.getDeepestHighlight(range[0]);
 		var endModel = this.getDeepestHighlight(range[1]);
-		var startNode = this.getTextNode(startModel, range[0]);
-		var endNode = this.getTextNode(endModel, range[1]);
+		var startNode = this._getTextNode(startModel, range[0], true);
+		var endNode = this._getTextNode(endModel, range[1], false);
 		rangeEl.setStart(startNode[0], startNode[1]);
 		rangeEl.setEnd(endNode[0], endNode[1]);
 		return rangeEl;
@@ -40,25 +40,39 @@ var HighlightCollection = Backbone.Collection.extend({
 		}, this.rootModel);
 	},
 
-	getTextNode: function(model, offset) {
-		var children = document.getElementById(model.get('id')).childNodes;
+	_getTextNode: function(model, offset, isStart) {
 		var current = model.get('start');
-		for (var i = 0; i < children.length; i++){
-			if (children[i].nodeType === 3){
-				current += children[i].nodeValue.length;
+		var children = this._getChildren(model);
+		for (var i = 0; i < children.length; i++) {
+			var node = children[i];
+			var length = this._getText(node).length
+			if (Dom.isTextNode(node)) {
+				current += length;
 			} else {
-				current = parseInt(children[i].getAttribute('data-end'));
+				current = parseInt(node.getAttribute('data-end'));
 			}
-			if (current >= offset){
+			if (current >= offset) {
 				return [
-					children[i],
-					offset - (current - children[i].nodeValue.length)
+					node,
+					this._spaced(offset, isStart) - this._spaced(current - length)
 				];
 			} 
 		}
 		throw 'Cannot find text node for offset ' + offset;
 	},
-	
+
+	_getChildren: function(model) {
+		return document.getElementById(model.get('id')).childNodes;
+	},
+
+	_getText: function(el) {
+		return F.stripWS(el.nodeValue);
+	},
+
+	_spaced: function(index, isStart) {
+		return index + getNumLineSpaces(index, isStart);
+	},
+
 	generateSpanId: function(range) {
 		return 'Span-' + range.join('-');
 	},

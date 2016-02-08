@@ -34,7 +34,6 @@ var SequenceView = Backbone.View.extend({
 
 	initialize: function(options) {
 		this.caretPosition = 1;
-		this.line = {};
 		this.currentPositionEl = document.getElementById(this.options.currentPositionEl);
 		this.lineNumsLeftEl = document.getElementById(this.options.lineNumsLeftEl);
 		this.lineNumsRightEl = document.getElementById(this.options.lineNumsRightEl);
@@ -43,6 +42,7 @@ var SequenceView = Backbone.View.extend({
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
 		this.listenTo(this.collection, 'reset', this.render);
+		this._calculateLineProperties();
 		$(window).resize(_.bind(this.render, this));
 	},
  
@@ -76,7 +76,13 @@ var SequenceView = Backbone.View.extend({
 
  	displayCurrentPosition: function() {
  		selection = this.getSelection(); 
- 		this.caretPosition = this._getGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		var spaced = this._getSpacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		var unspaced = this._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		if (spaced % 11 === 0) {
+ 			this.caretPosition = '#';
+ 		} else {
+ 			this.caretPosition = unspaced;
+ 		}
  		this.currentPositionEl.innerHTML = '<b>' + this.caretPosition + '</b>';
  	},
 
@@ -97,23 +103,33 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	getHighlightedRange: function(selection) {
-		var a = this._getGlobalOffset(selection.anchorNode, selection.anchorOffset);
-		var b = this._getGlobalOffset(selection.focusNode, selection.focusOffset);
+		var a = this._getUnspacedGlobalOffset(selection.anchorNode, selection.anchorOffset);
+		var b = this._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset);
 		return [Math.min(a,b), Math.max(a,b)];
 	},
 
-	_getGlobalOffset: function(textNode, offset) {
-		var children = Dom.getFlattenedChildren(this.el);
-		var index = R.max(0, $.inArray(textNode, children));
-		var beforeSpans = R.take(index, children);
-		var sequence = this.getSequenceFromSpans(beforeSpans);
-		var cleanOffset = this._getCleanOffset(textNode, offset);
+	_getSpacedGlobalOffset: function(textNode, offset) {
+		var beforeSpans = this._getLeadingSpans(textNode);
+		var sequence = this._getSequenceFromSpans(beforeSpans);
+		return sequence.length + offset;
+	},
+
+	_getUnspacedGlobalOffset: function(textNode, offset) {
+		var beforeSpans = this._getLeadingSpans(textNode);
+		var sequence = F.stripWS(this._getSequenceFromSpans(beforeSpans));
+		var cleanOffset = this._getUnspacedOffset(textNode, offset);
 		return sequence.length + cleanOffset;
 	},
 
-	getSequenceFromSpans: R.compose(F.stripWS, R.join(''), R.pluck('nodeValue')),
+	_getLeadingSpans: function(span) {
+		var allSpans = Dom.getFlattenedChildren(this.el);
+		var index = R.max(0, $.inArray(span, allSpans));
+		return R.take(index, allSpans);
+	},
 
-	_getCleanOffset: function(textNode, offset) {
+	_getSequenceFromSpans: R.compose(R.join(''), R.pluck('nodeValue')),
+
+	_getUnspacedOffset: function(textNode, offset) {
 		var nSpaces = this._countSpaces(textNode.nodeValue.substr(0, offset));
 		return offset - nSpaces;
 	},
@@ -167,11 +183,16 @@ var SequenceView = Backbone.View.extend({
 	},
 	
 	render: function() {
-		this.line.nChars = Dom.getLineCapacity(this.el);
-		this.line.nColumns = Math.floor((this.line.nChars - 1) / 9);
+		this._calculateLineProperties();
 		this._printSequence();
 		this._printLineNumbers();
 		this._restoreCaretPosition();
+	},
+
+	_calculateLineProperties: function() {
+		this.line = {};
+		this.line.capacity = Dom.getLineCapacity(this.el);
+		this.line.nColumns = getNumLineColumns(this.line.capacity);
 	},
 
 	_printSequence: function() {
@@ -180,7 +201,8 @@ var SequenceView = Backbone.View.extend({
 
 	_getSpacedSequence: function() {
 		var sequence = this.model.get('sequence').split('');
-		return R.join('', sequence.map(function(char, index) {
+		var join = R.compose(R.trim, R.join('')); 
+		return join(sequence.map(function(char, index) {
 			if ((index + 1) % 10 === 0) {
 				return char + ' ';
 			}
@@ -201,12 +223,13 @@ var SequenceView = Backbone.View.extend({
 
 	_getLineLength: function(row) {
 		var seq = this.model.get('sequence');
-		var x = row * (this.line.nChars - this.line.nColumns);
+		var x = row * 10 * this.line.nColumns;
 		return (seq.length / x) > 1 ? x : (seq.length % x);
 	},
 
 	_restoreCaretPosition: function() {
 		this.el.focus();
+		this.caretPosition = 1;
 		var range = this.collection.createDocumentRange([this.caretPosition-1, this.caretPosition-1]);
 		var selection = window.getSelection();
 		selection.removeAllRanges();

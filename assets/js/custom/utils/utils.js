@@ -11,3 +11,16 @@ function var_dump(obj) {
         return val;
     }));
 };
+
+function getNumLineColumns(x) {
+    return Math.floor(x / 11);
+};
+
+function getNumLineSpaces(x, isStart) {
+    var index = isStart ? x : x - 1;
+    if (x > 0) {
+        return Math.floor(index / 10);
+    }
+    return 0;
+}
+

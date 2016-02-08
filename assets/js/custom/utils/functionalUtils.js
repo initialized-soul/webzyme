@@ -92,7 +92,9 @@ var F = {
     },
     // strip all whitespaces :: String -> String
     stripWS: function(x) {
-        return x.replace(/ /g, '');
+        return F.Maybe(x).maybe('', function(text) {
+            return text.replace(/ /g, '');
+        });
     },
     // array :: a | [a] -> [a]
     array: function(x){
