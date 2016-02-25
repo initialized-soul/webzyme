@@ -1,26 +1,3 @@
-// Tail call optimization for recursive functions
-function tco(f) {
-    var value;
-    var active = false;
-    var accumulated = [];
-
-    return function accumulator() {
-        accumulated.push(arguments);
-
-        if (!active) {
-            active = true;
-
-            while (accumulated.length) {
-                value = f.apply(this, accumulated.shift());
-            }
-
-            active = false;
-
-            return value;
-        }
-    };
-}
-
 var F = {
     Maybe: function (x) {
         var Nothing = {
@@ -100,73 +77,8 @@ var F = {
     array: function(x){
         return [].concat(x);
     },
-    // intersect :: [a] -> [a] -> [a]
-    intersect: function (xs, ys){
-        return R.filter(R.compose(R.not, R.contains(R.__, ys)), xs);
-    },
-    // insertAt :: Number -> String -> String -> String
-    insertAt: R.curry(function(i, x, y){
-        return y.substr(0, i) + x + y.substr(i);
-    }),
-    // stringEquals :: a -> b -> Bool
-    stringEquals: R.curry(function(a, b) {
-        return String(a) === String(b);
-    }),
-    // toFixed :: Number -> Number -> String
-    toFixed: R.curry(function (x, y) {
-        return y.toFixed(x);
-    }),
-    // minOrZero: [Number] -> Number
-    minOrZero: function (xs) {
-        var min = this.min(xs);
-        return min > 0 ? 0 : min;
-    },
-    // range :: [Number] -> Number
-    range: function (xs) {
-        return this.max(xs) - this.min(xs);
-    },
-    // max :: [Number] -> Number
-    max: function (xs) {
-        return Math.max.apply(null, xs);
-    },
-    // min :: [Number] -> Number
-    min: function (xs) {
-        return Math.min.apply(null, xs);
-    },
+    // inArray :: a -> Array -> Bool
     inArray: R.curry(function (x, xs) {
         return R.findIndex(R.equals(x), xs) !== -1;
     }),
-    // isNumericArray :: [a] -> Bool
-    isNumericArray: function (xs) {
-        return R.compose(this.isNumeric, R.head)(xs);
-    },
-    // isNumeric: a -> Bool
-    isNumeric: function (x) {
-        return !isNaN(parseFloat(x)) && isFinite(x);
-    },
-    // isString :: a -> Bool
-    isString: function (x) {
-        return (typeof x === 'string' || x instanceof String) ? true : false;
-    },
-    // longest :: [String] -> String
-    longest: function (xs) {
-        return R.last(R.sort(this.length, xs));
-    },
-    // length :: [a] -> Number
-    length: function (x) {
-        return x.length;
-    },
-    // secondLast :: [a] -> a
-    secondLast: function (xs) {
-        return R.compose(R.head, R.takeLast(2))(xs);
-    },
-    // sequence :: Number -> Number -> [Number] -> [Number]
-    sequence: tco(function (length, increment, xs) {
-        if (xs.length === length) {
-            return xs;
-        }
-        var copy = xs.slice(0);
-        copy.push(R.last(xs) + increment);
-        return this.sequence(length, increment, copy);
-    })
 };

@@ -1,9 +1,12 @@
 var HighlightCollection = Backbone.Collection.extend({
 		
+	model: HighlightModel,
+	
 	initialize: function(models, options) {
 		this.sequenceModel = options.sequenceModel;
+		this.$parent = options.$parent;
 		this.rootModel = new Backbone.Model({
-			id: options.sequenceSpanEl,
+			name: 'sequence',
 			start: 0,
 			end: this.sequenceModel.get('sequence').length - 1,
 			text: this.sequenceModel.get('sequence'),
@@ -42,7 +45,7 @@ var HighlightCollection = Backbone.Collection.extend({
 
 	_getTextNode: function(model, offset, isStart) {
 		var current = model.get('start');
-		var children = this._getChildren(model);
+		var children = this._getChildren(model); 
 		for (var i = 0; i < children.length; i++) {
 			var node = children[i];
 			var length = this._getText(node).length
@@ -62,7 +65,7 @@ var HighlightCollection = Backbone.Collection.extend({
 	},
 
 	_getChildren: function(model) {
-		return document.getElementById(model.get('id')).childNodes;
+		return this.$parent.find('span[name=' + model.get('name') + ']').get(0).childNodes;
 	},
 
 	_getText: function(el) {
@@ -73,7 +76,7 @@ var HighlightCollection = Backbone.Collection.extend({
 		return index + getNumLineSpaces(index, isStart);
 	},
 
-	generateSpanId: function(range) {
+	generateSpanName: function(range) {
 		return 'Span-' + range.join('-');
 	},
 });

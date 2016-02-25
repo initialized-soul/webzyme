@@ -1,6 +1,7 @@
 <!-- Default home page -->
 <div class="container">
     <nav class="navbar navbar-default">
+        Dont forget its bootstrap 4!!!
         <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
@@ -58,29 +59,28 @@
         </div><!-- /.container-fluid -->
     </nav>
 
-    <div class="panel panel-default" id="div_sequence_panel">
-        <div id="div_sequence_name" class="panel-heading wordwrap">
-            <span class="glyphicon glyphicon-chevron-right"></span>
-            <span id="span_sequence_name"></span>
-            <span id="span_current_position" class="badge" style="float:right"><b>#</b></span>
-        </div>
-        <div id="div_sequence_container" class="panel-body container-fluid">
-            <div class="row">
-                <div class="col-xs-2 col-md-1 sequence-font unselectable" style="text-align:right">
-                    <b><span id="span_sequence_positions_left"></span></b>
-                </div>
-                <div id="div_sequence" class="col-xs-8 col-md-10 wordwrap sequence-font">
-                    <span id="span_sequence" contenteditable="true"></span>
-                </div>
-                <div class="col-xs-2 col-md-1 sequence-font unselectable" style="text-align:left">
-                    <b><span id="span_sequence_positions_right"></span></b>
-                </div>
-            </div>
+    <div id="div_sequence_nav">
+        
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item" role="button" name="remove">
+                <p class="navbar-btn" name="remove">
+                    <a href="#" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Remove Current Sequence">
+                        <span class="glyphicon glyphicon-minus"></span>
+                    </a>
+                </p>
+            </li>
+            <li class="nav-item" role="button" name="add">
+                <p class="navbar-btn" name="add">
+                    <a href="#" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Add DNA Sequence">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </a>
+                </p>
+            </li>
+        </ul>
+   
+        <!-- Tab panes -->
+        <div class="tab-content">
         </div>
     </div>
 
-    <div class="wordwrap container-fluid">
-        <ul id="ul_highlights" class="list-group">
-        </ul>
-    </div>
 </div>

@@ -1,0 +1,44 @@
+<div id="tab_<%= tab.get('id') %>" role="tabpanel" class="tab-pane" aria-labelledby="tab_<%= tab.get('id') %>">
+            
+	<div class="panel panel-default">
+
+	    <div class="panel-heading wordwrap">
+	        <span class="glyphicon glyphicon-chevron-right"></span>
+	        <span name="name"></span>
+	        <span name="caret" class="badge" style="float:right"><b>#</b></span>
+	    </div>
+
+	    <div class="panel-body container-fluid">
+	        <div class="row">
+	            <div class="col-xs-2 col-md-1 sequence-font unselectable" style="text-align:right">
+	                <b>
+	                	<span name="positions_left"></span>
+	                </b>
+	            </div>
+	            <div class="col-xs-8 col-md-10 wordwrap sequence-font">
+	                <span name="sequence" contenteditable="true">
+	                	<%= tab.get('sequenceModel').get('sequence') %>
+	                </span>
+	            </div>
+	            <div class="col-xs-2 col-md-1 sequence-font unselectable" style="text-align:left">
+	                <b>
+	                	<span id="positions_right"></span>
+	                </b>
+	            </div>
+	        </div>
+	    </div>
+
+	</div>
+
+	<div class="wordwrap container-fluid">
+	    <ul class="list-group"></ul>
+	</div>
+
+	<div name="context_menu" class="dropdown">
+        <ul class="dropdown-menu" role="menu">
+            <li><a tabindex="1" name="highlight">Highlight (h)</a></li>
+            <li><a tabindex="2" name="newSequence">To new sequence (n)</a></li>
+        </ul>
+    </div>
+
+</div> 

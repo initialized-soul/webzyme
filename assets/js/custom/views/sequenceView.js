@@ -33,10 +33,7 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	initialize: function(options) {
-		this.caretPosition = 1;
-		this.currentPositionEl = document.getElementById(this.options.currentPositionEl);
-		this.lineNumsLeftEl = document.getElementById(this.options.lineNumsLeftEl);
-		this.lineNumsRightEl = document.getElementById(this.options.lineNumsRightEl);
+		this._initializeContextMenu();
 		this.listenTo(this.model, 'change', this.onModelChange);
 		this.listenTo(this.collection, 'add', this._highlightSpan);
 		this.listenTo(this.collection, 'remove', this.removeSpan);
@@ -46,6 +43,30 @@ var SequenceView = Backbone.View.extend({
 		$(window).resize(_.bind(this.render, this));
 	},
  
+ 	_initializeContextMenu: function() {
+ 		var that = this;
+ 		this.$el.contextmenu({
+			target: this.options.$contextMenuEl,
+			before: function(event) {
+			    that._saveUserSelection();
+		  	},
+			onItem: function(context, event) {
+				if (event.target.name === 'highlight') {
+					that._highlight();
+				} else {
+					that._toNewSequence();
+				}
+
+  			},
+  			onKeyUp: function(event) {
+  				if (event.keyCode === 72) {
+  					that._highlight();
+  					this.closemenu(event);
+  				}
+  			}
+		});
+ 	},
+
  	keyDown: function(event) {
  		if (F.inArray(event.keyCode, this.options.basicKeys)){
  			return true;
@@ -60,13 +81,8 @@ var SequenceView = Backbone.View.extend({
     	}
  	},
 
- 	mouseUp: function() {
- 		this.displayCurrentPosition();
- 		this.executeUserHighlight();
- 	},
-
  	keyUp: function() {
- 		this.displayCurrentPosition();
+ 		this._displayCaretPosition(this._findCaretPosition());
  		this.refreshModel();
  	},
 
@@ -74,31 +90,30 @@ var SequenceView = Backbone.View.extend({
  		this.model.set('sequence', this.el.textContent);
  	},
 
- 	displayCurrentPosition: function() {
- 		selection = this.getSelection(); 
- 		var spaced = this._getSpacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
- 		var unspaced = this._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
- 		if (spaced % 11 === 0) {
- 			this.caretPosition = '#';
- 		} else {
- 			this.caretPosition = unspaced;
- 		}
- 		this.currentPositionEl.innerHTML = '<b>' + this.caretPosition + '</b>';
+ 	mouseUp: function() {
+ 		this._displayCaretPosition(this._findCaretPosition());
  	},
 
-	executeUserHighlight: function() {
+ 	_findCaretPosition: function() {
+ 		var selection = this._getUserSelection();
+ 		var spaced = this._getSpacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		var unspaced = this._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+ 		return (spaced % 11 === 0) ? '#' : unspaced;
+ 	},
+
+	_highlight: function() {
 		var that = this;
-		var selection = this.getSelection();
-		var range = this.getHighlightedRange(selection);
-		F.Maybe(selection.toString()).bind(function(text) {
+		var range = this.getHighlightedRange(this.userSelection);
+		F.Maybe(this.userSelection.text).bind(function(text) {
 			that.collection.add({
-				'id' : that.collection.generateSpanId(range), //prevents duplicates
+				'name' : that.collection.generateSpanName(range), //prevents duplicates
 				'start' : range[0],
 				'end' : range[1],
 				'text' : F.stripWS(text),
-				'rangeEl' : selection.getRangeAt(0),
+				'rangeEl' : that.userSelection.range,
 				'type' : 'user'
 			});
+			that._restoreCaretPosition();
 		});
 	},
 
@@ -146,7 +161,7 @@ var SequenceView = Backbone.View.extend({
 			var span = that.createSequenceSpan(selectionContents, model);
 			rangeEl.insertNode(span);
 		}, F.array(models));
-		this.clearSelection();
+		this._clearUserSelection();
 		this._cleanTextNodes();
 		this.calculateSpanDepths();
 	},
@@ -155,21 +170,33 @@ var SequenceView = Backbone.View.extend({
 		var span = document.createElement('span');
 		span.appendChild(contents);
 		span.setAttribute('class', 'sequence-highlight-' + model.getCssClass());
-		span.setAttribute('id', model.get('id'));
+		span.setAttribute('name', model.get('name'));
 		span.setAttribute('data-start', model.get('start'));
 		span.setAttribute('data-end', model.get('end'));
 		return span;
 	},
 
-	getSelection: function() {
+	_saveUserSelection: function() {
+		var selection = this._getUserSelection();
+		this.userSelection = {
+			text: selection.toString(),
+			anchorNode : selection.anchorNode,
+			anchorOffset : selection.anchorOffset,
+			focusNode : selection.focusNode,
+			focusOffset : selection.focusOffset,
+			range: selection.getRangeAt(0)
+		};
+	},
+
+	_getUserSelection: function() {
 		if (document.selection) {
         	return document.selection;
-	    } else if (window.getSelection) {
+	    } else if (window.getSelection()) {
         	return window.getSelection();
 	    }
 	},
 
-	clearSelection: function() {
+	_clearUserSelection: function() {
 	    if (document.selection) {
         	document.selection.empty();
 	    } else if (window.getSelection) {
@@ -191,8 +218,8 @@ var SequenceView = Backbone.View.extend({
 
 	_calculateLineProperties: function() {
 		this.line = {};
-		this.line.capacity = Dom.getLineCapacity(this.el);
-		this.line.nColumns = getNumLineColumns(this.line.capacity);
+		//this.line.capacity = Dom.getLineCapacity(this.el);
+		//this.line.nColumns = getNumLineColumns(this.line.capacity);
 	},
 
 	_printSequence: function() {
@@ -211,14 +238,14 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	_printLineNumbers: function() {
-		this.lineNumsLeftEl.innerHTML = '1<br>';
-		this.lineNumsRightEl.innerHTML = '';
+		this.options.$lineNumsLeftEl.innerHTML = '1<br>';
+		this.options.$lineNumsRightEl.innerHTML = '';
 		for (var i = 1; i < this.el.getClientRects().length; i++){
 			var lineLength = this._getLineLength(i);
-			this.lineNumsLeftEl.innerHTML += (lineLength + 1) + '<br>';
-			this.lineNumsRightEl.innerHTML += lineLength + '<br>';
+			this.options.$lineNumsLeftEl.innerHTML += (lineLength + 1) + '<br>';
+			this.options.$lineNumsRightEl.innerHTML += lineLength + '<br>';
 		}
-		this.lineNumsRightEl.innerHTML += this.model.get('sequence').length;
+		this.options.$lineNumsRightEl.innerHTML += this.model.get('sequence').length;
 	},
 
 	_getLineLength: function(row) {
@@ -229,13 +256,17 @@ var SequenceView = Backbone.View.extend({
 
 	_restoreCaretPosition: function() {
 		this.el.focus();
-		this.caretPosition = 1;
-		var range = this.collection.createDocumentRange([this.caretPosition-1, this.caretPosition-1]);
+		this._displayCaretPosition(1);
+		var range = this.collection.createDocumentRange([0,0]);
 		var selection = window.getSelection();
 		selection.removeAllRanges();
 		selection.addRange(range);
 	},
 	
+	_displayCaretPosition: function(caretPosition) {
+ 		this.options.$currentPositionEl.innerHTML = '<b>' + caretPosition + '</b>';
+ 	},
+
 	removeSpan: function(models) {
 		var that = this;
 		R.map(function(model){
@@ -266,7 +297,7 @@ var SequenceView = Backbone.View.extend({
 	calculateSpanDepths: function() {
 		var that = this;
 		this.collection.each(function(model){
-			var span = $('#' + model.get('id'));
+			var span = that._first('span[name=' + model.get('name') + ']');
 			var depth = span.parentsUntil(that.$el).length;
 			model.set('depth', depth);
 		});
@@ -285,7 +316,10 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	getSpans: function(model) {
-		// select by id attribute instead of # so that an array of elements with the same id can be returned
-		return $('[id=' + model.get('id') + ']');
+		return this.$el.find('span[name=' + model.get('name') + ']');
+	},
+
+	_first: function(criteria) {
+		return this.$el.find(criteria).first();
 	}
 });

@@ -9,7 +9,6 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Lato:300,400,700" !defa
 // Navbar =====================================================================
 
 .navbar {
-  @include box-shadow(none);
   border: none;
   font-size: 12px;
 
@@ -84,19 +83,12 @@ body {
 }
 
 .dropdown-menu {
-
-  border: none;
   margin: 0;
-  @include box-shadow(none);
 
   > li > a {
     font-size: 12px;
     font-weight: 300;
   }
-}
-
-.btn-group.open .dropdown-toggle {
-  @include box-shadow(none);
 }
 
 .dropdown-header {
@@ -166,10 +158,6 @@ label,
   .form-control-feedback {
     color: $brand-warning;
   }
-
-  .input-group-addon {
-    border: none;
-  }
 }
 
 .has-error {
@@ -185,10 +173,6 @@ label,
   &.checkbox-inline label,
   .form-control-feedback {
     color: $brand-danger;
-  }
-
-  .input-group-addon {
-    border: none;
   }
 }
 
@@ -206,33 +190,9 @@ label,
   .form-control-feedback {
     color: $brand-success;
   }
-
-  .input-group-addon {
-    border: none;
-  }
-}
-
-.form-control:focus {
-  @include box-shadow(none);
-}
-
-.has-warning,
-.has-error,
-.has-success {
-  .form-control:focus {
-    @include box-shadow(none);
-  }
 }
 
 // Navs =======================================================================
-
-.nav {
-  .open > a,
-  .open > a:hover,
-  .open > a:focus {
-    border-color: transparent;
-  }
-}
 
 .nav-tabs {
   > li > a {
@@ -280,17 +240,10 @@ label,
 
 // Containers =================================================================
 
-.well {
-  @include box-shadow(none);
-}
-
 a.list-group-item {
 
   &.active,
   &.active:hover,
-  &.active:focus {
-    border: none;
-  }
 
   &-success {
     &.active {
@@ -327,8 +280,6 @@ a.list-group-item {
 }
 
 .panel {
-  border: none;
-
   &-default > .panel-heading {
     background-color: $table-bg-hover;
     color: $text-color;
@@ -337,7 +288,6 @@ a.list-group-item {
 
 .thumbnail {
   background-color: $well-bg;
-  border: none;
 }
 
 .modal {
@@ -348,11 +298,5 @@ a.list-group-item {
     background-color: $table-bg-hover;
     border: none;
     border-radius: 0;
-  }
-}
-
-.popover {
-  &-title {
-    border: none;
   }
 }
