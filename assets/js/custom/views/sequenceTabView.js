@@ -2,7 +2,8 @@ var SequenceTabView = Backbone.View.extend({
 	
 	events: {
 		'click p.navbar-btn[name=add]' : '_addTabButton',
-		'click p.navbar-btn[name=remove]' : '_removeTabButton'
+		'click p.navbar-btn[name=remove]' : '_removeTabButton',
+		'shown.bs.tab' : '_tabShownEvent'
 	},
 
 	initialize: function() {
@@ -85,9 +86,9 @@ var SequenceTabView = Backbone.View.extend({
 	_createSequenceView: function($el, tab) {
 		tab.set('sequenceView', new SequenceView({
 			el: this._getSpanByName('sequence', $el),
-			$currentPositionEl: this._getSpanByName('caret', $el),
-			$lineNumsLeftEl: this._getSpanByName('positions_left', $el),
-			$lineNumsRightEl: this._getSpanByName('positions_right', $el),
+			currentPositionEl: this._getSpanByName('caret', $el).get(0),
+			lineNumsLeftEl: this._getSpanByName('positions_left', $el).get(0),
+			lineNumsRightEl: this._getSpanByName('positions_right', $el).get(0),
 			$contextMenuEl: this._first('div[name=context_menu]', $el),
 			//tabs: this.collection,
 			model: tab.get('sequenceModel'),
@@ -102,5 +103,10 @@ var SequenceTabView = Backbone.View.extend({
 	_first: function(criteria, $element) {
 		var $el = F.Maybe($element).def(this.$el);
 		return $el.find(criteria).first();
+	},
+
+	_tabShownEvent: function(event) {
+		var tab = this.collection.get(event.target.getAttribute('data-id'));
+		tab.get('sequenceView').render();
 	}
 });

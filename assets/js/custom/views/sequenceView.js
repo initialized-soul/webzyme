@@ -155,10 +155,10 @@ var SequenceView = Backbone.View.extend({
 
 	_highlightSpan: function(models) {
 		var that = this;
-		R.map(function(model){
+		R.map(function(model) {
 			var rangeEl = model.get('rangeEl');
 			var selectionContents = rangeEl.extractContents();
-			var span = that.createSequenceSpan(selectionContents, model);
+			var span = that.createSequenceSpan(selectionContents, model); console.log(rangeEl);
 			rangeEl.insertNode(span);
 		}, F.array(models));
 		this._clearUserSelection();
@@ -214,12 +214,13 @@ var SequenceView = Backbone.View.extend({
 		this._printSequence();
 		this._printLineNumbers();
 		this._restoreCaretPosition();
+		this._highlightSpan(this.collection.models);
 	},
 
 	_calculateLineProperties: function() {
 		this.line = {};
-		//this.line.capacity = Dom.getLineCapacity(this.el);
-		//this.line.nColumns = getNumLineColumns(this.line.capacity);
+		this.line.capacity = Dom.getLineCapacity(this.el);
+		this.line.nColumns = getNumLineColumns(this.line.capacity);
 	},
 
 	_printSequence: function() {
@@ -228,8 +229,8 @@ var SequenceView = Backbone.View.extend({
 
 	_getSpacedSequence: function() {
 		var sequence = this.model.get('sequence').split('');
-		var join = R.compose(R.trim, R.join('')); 
-		return join(sequence.map(function(char, index) {
+		var fn = R.compose(R.trim, R.join('')); 
+		return fn(sequence.map(function(char, index) {
 			if ((index + 1) % 10 === 0) {
 				return char + ' ';
 			}
@@ -238,14 +239,17 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	_printLineNumbers: function() {
-		this.options.$lineNumsLeftEl.innerHTML = '1<br>';
-		this.options.$lineNumsRightEl.innerHTML = '';
-		for (var i = 1; i < this.el.getClientRects().length; i++){
-			var lineLength = this._getLineLength(i);
-			this.options.$lineNumsLeftEl.innerHTML += (lineLength + 1) + '<br>';
-			this.options.$lineNumsRightEl.innerHTML += lineLength + '<br>';
-		}
-		this.options.$lineNumsRightEl.innerHTML += this.model.get('sequence').length;
+		var sequenceLength = this.model.get('sequence').length;
+		this.options.lineNumsLeftEl.innerHTML = '1<br>';
+		this.options.lineNumsRightEl.innerHTML = '';
+		var row = 1;
+		do {
+			var lineLength = this._getLineLength(row++);
+			this.options.lineNumsRightEl.innerHTML += lineLength + '<br>';
+			if (lineLength < sequenceLength) {
+				this.options.lineNumsLeftEl.innerHTML += (lineLength + 1) + '<br>';
+			}
+		} while (lineLength < sequenceLength);
 	},
 
 	_getLineLength: function(row) {
@@ -264,7 +268,7 @@ var SequenceView = Backbone.View.extend({
 	},
 	
 	_displayCaretPosition: function(caretPosition) {
- 		this.options.$currentPositionEl.innerHTML = '<b>' + caretPosition + '</b>';
+ 		this.options.currentPositionEl.innerHTML = '<b>' + caretPosition + '</b>';
  	},
 
 	removeSpan: function(models) {

@@ -1,4 +1,4 @@
-<div id="tab_<%= tab.get('id') %>" role="tabpanel" class="tab-pane" aria-labelledby="tab_<%= tab.get('id') %>">
+<div id="tab_<%= tab.get('id') %>" data-id="<%= tab.get('id') %>" role="tabpanel" class="tab-pane sequence-tab" aria-labelledby="tab_<%= tab.get('id') %>">
             
 	<div class="panel panel-default">
 
@@ -16,13 +16,11 @@
 	                </b>
 	            </div>
 	            <div class="col-xs-8 col-md-10 wordwrap sequence-font">
-	                <span name="sequence" contenteditable="true">
-	                	<%= tab.get('sequenceModel').get('sequence') %>
-	                </span>
+	                <span name="sequence" contenteditable="true"></span>
 	            </div>
 	            <div class="col-xs-2 col-md-1 sequence-font unselectable" style="text-align:left">
 	                <b>
-	                	<span id="positions_right"></span>
+	                	<span name="positions_right"></span>
 	                </b>
 	            </div>
 	        </div>

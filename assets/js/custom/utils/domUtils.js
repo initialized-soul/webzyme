@@ -3,8 +3,12 @@ var Dom = {
 		var origText = el.innerHTML;
  		el.innerHTML = 'A';
  		var initialHeight = el.offsetHeight;
+ 		var i = 0;
  		while (el.offsetHeight <= initialHeight){
  			el.innerHTML += 'A';
+ 			if (i++ > 200) {
+ 				break;
+ 			}
  		}
  		var capacity = el.innerHTML.length - 1;
  		el.innerHTML = origText;
