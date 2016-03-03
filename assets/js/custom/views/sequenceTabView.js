@@ -84,7 +84,7 @@ var SequenceTabView = Backbone.View.extend({
 	},
 
 	_createSequenceView: function($el, tab) {
-		tab.set('sequenceView', new SequenceView({
+		var view = new SequenceView({
 			el: this._getSpanByName('sequence', $el),
 			currentPositionEl: this._getSpanByName('caret', $el).get(0),
 			lineNumsLeftEl: this._getSpanByName('positions_left', $el).get(0),
@@ -93,7 +93,9 @@ var SequenceTabView = Backbone.View.extend({
 			//tabs: this.collection,
 			model: tab.get('sequenceModel'),
 			collection: tab.get('highlightCollection')
-		}));
+		});
+		this.listenTo(view, 'newsequence', this.addTab);
+		tab.set('sequenceView', view);
 	},
 
 	_getSpanByName: function(name, $el) {

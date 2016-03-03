@@ -57,13 +57,10 @@ var SequenceSearchView = Backbone.View.extend({
 		F.Maybe(currentTab).bind(function(tab) {
 			var collection = tab.get('highlightCollection');
 			var range = [match.index, match.index + match[0].length];
-			var rangeEl = collection.createDocumentRange(range);
 			collection.add({
 				'name' : collection.generateSpanName(range),
-				'start' : range[0],
-				'end' : range[1],
+				'range' : range,
 				'text' : match[0],
-				'rangeEl' : rangeEl,
 				'type' : 'search'
 			});
 		});

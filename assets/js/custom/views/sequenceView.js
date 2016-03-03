@@ -62,8 +62,21 @@ var SequenceView = Backbone.View.extend({
   				if (event.keyCode === 72) {
   					that._highlight();
   					this.closemenu(event);
+  				} else if (event.keycode === 78) {
+  					that._toNewSequence();
+  					this.closemenu(event);
   				}
   			}
+		});
+ 	},
+
+ 	_toNewSequence: function() {
+ 		var that = this;
+		F.Maybe(this.userSelection.text).bind(function(text) {
+			that.trigger('newsequence', new SequenceModel({
+				name: 'New Sequence',
+				sequence: text
+			}));
 		});
  	},
 
@@ -107,10 +120,8 @@ var SequenceView = Backbone.View.extend({
 		F.Maybe(this.userSelection.text).bind(function(text) {
 			that.collection.add({
 				'name' : that.collection.generateSpanName(range), //prevents duplicates
-				'start' : range[0],
-				'end' : range[1],
+				'range' : range,
 				'text' : F.stripWS(text),
-				'rangeEl' : that.userSelection.range,
 				'type' : 'user'
 			});
 			that._restoreCaretPosition();
@@ -156,9 +167,9 @@ var SequenceView = Backbone.View.extend({
 	_highlightSpan: function(models) {
 		var that = this;
 		R.map(function(model) {
-			var rangeEl = model.get('rangeEl');
+			var rangeEl = that.collection.createDocumentRange(model.get('range'));
 			var selectionContents = rangeEl.extractContents();
-			var span = that.createSequenceSpan(selectionContents, model); console.log(rangeEl);
+			var span = that.createSequenceSpan(selectionContents, model);
 			rangeEl.insertNode(span);
 		}, F.array(models));
 		this._clearUserSelection();
@@ -171,8 +182,8 @@ var SequenceView = Backbone.View.extend({
 		span.appendChild(contents);
 		span.setAttribute('class', 'sequence-highlight-' + model.getCssClass());
 		span.setAttribute('name', model.get('name'));
-		span.setAttribute('data-start', model.get('start'));
-		span.setAttribute('data-end', model.get('end'));
+		span.setAttribute('data-start', model.get('range')[0]);
+		span.setAttribute('data-end', model.get('range')[1]);
 		return span;
 	},
 

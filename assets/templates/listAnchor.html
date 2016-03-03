@@ -4,9 +4,9 @@
 	</div>
   	<div class="col-xs-3 col-md-1">
 	  	<span class="badge badge-<%= highlight.getCssClass() %>"> 
-	    	<b><%= highlight.get('start') + 1 %></b>
+	    	<b><%= highlight.get('range')[0] + 1 %></b>
 	    	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
-	    	<b><%= highlight.get('end') %></b> 
+	    	<b><%= highlight.get('range')[1] %></b> 
 	  	</span>
 	</div>
 </a>
