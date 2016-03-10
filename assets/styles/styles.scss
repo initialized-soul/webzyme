@@ -1,6 +1,23 @@
-.sequence-font {font-family: 'Lucida Console', Monaco, monospace;}
+.banner {
+	background-color: $palette1;
+}
+
+.logo {
+	background-color: $palette1;
+	min-height: 50px;
+}
+
+.sequence-font {
+	font-family: $font-family-monospace;
+	font-weight: bold;
+}
 
 .sequence-highlight {border-radius: 6px;}
+
+.sequence-highlight-primary {
+	@extend .sequence-highlight;
+	background: rgba($brand-primary,0.3);
+}
 
 .sequence-highlight-info {
 	@extend .sequence-highlight;
@@ -26,8 +43,6 @@
 .sequence-highlight-hover-success {background: rgba($brand-success, 1.0)}
 .sequence-highlight-hover-warning {background: rgba($brand-warning, 1.0)}
 .sequence-highlight-hover-danger {background: rgba($brand-danger, 1.0)}
-
-.sequence-tab {max-width: 1250px;}
 
 .search-error {color: red;}
 
