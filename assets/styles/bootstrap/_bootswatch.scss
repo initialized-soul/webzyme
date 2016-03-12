@@ -7,24 +7,26 @@ $web-font-path: "https://fonts.googleapis.com/css?family=Lato:300,400,700" !defa
 // Navbar =====================================================================
 
 .navbar {
-  border: none;
-  font-size: 12px;
+    
+    padding: $navbar-padding;
+    border: none;
+    font-size: 12px;
 
-  &-default {
+    &-default {
 
-    .label {
-      background-color: #fff;
-      color: $navbar-default-bg;
+        .label {
+            background-color: #fff;
+            color: $navbar-default-bg;
+        }
     }
-  }
 
-  &-inverse {
+    &-inverse {
 
-    .label {
-      background-color: #fff;
-      color: $navbar-inverse-bg;
+        .label {
+            background-color: #fff;
+            color: $navbar-inverse-bg;
+        }
     }
-  }
 }
 
 // Buttons ====================================================================
@@ -81,12 +83,16 @@ body {
 }
 
 .dropdown-menu {
-  margin: 0;
+    background-color: $palette1;
+    margin: 0;
 
-  > li > a {
-    font-size: 12px;
-    font-weight: 300;
-  }
+    > li > a {
+        font-size: 12px;
+        font-weight: 300;
+        &:hover {
+            background-color: $component-hover-bg;
+        }
+    }
 }
 
 .dropdown-header {
@@ -122,11 +128,21 @@ table,
   }
  }
 
+// Prevent text focus outline =================================================
+
+:focus {
+    outline: none;
+}
+
 // Forms ======================================================================
 
 input,
 textarea {
   color: $input-color;
+}
+
+.label-default {
+    color: $lbl-default-color;
 }
 
 .label {
@@ -199,16 +215,34 @@ label,
 @mixin webzyme-btn() {
   margin:           $btn-margin;
   color:            $brand-primary;
-  border-radius:    $btn-border-radius;
+  border-radius:    $border-radius;
   border-color:     $btn-default-border;
   background-color: $btn-default-bg;
 }
 
-.ui-input-text {
-  > input {
-    border-radius: $btn-border-radius;
-    border-color: transparent;
-  }
+input[type="text"] {
+  border-radius: $border-radius;
+  border-color: $input-border-color;
+}
+
+.navbar-btn {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.btn {
+    color: $brand-primary;
+    height: $btn-height;
+    padding: $btn-padding;
+}
+
+.btn-default {
+    &:hover {
+        background-color: $component-hover-bg !important;
+    }
+    &:focus {
+        background-color: $component-focus-bg !important;
+    }
 }
 
 .navbar-form {
@@ -220,26 +254,32 @@ label,
 }
 
 .nav {
-  > li {
-    > p {
-      > a {
-        &.btn-default {
-          @include webzyme-btn();
+    > li {
+        padding: $navbar-padding;
+        > p {
+            > a {
+                &.btn-default {
+                @include webzyme-btn();
+                margin: 0px;
+                }
+            }
         }
-      }
-    }
-    > a {
-      border: $nav-link-border;
-      border-radius: $nav-link-border-radius;
-      background-color: $nav-link-bg;
-      &.active {
-        background-color: $nav-link-active-bg;
-        &:hover {
-          background-color: $nav-link-hover-bg;
+        > a {
+            padding: $nav-link-padding;
+            margin: 0px;
+            height: $btn-height;
+            border: $nav-link-border;
+            border-radius: $border-radius;
+            background-color: $nav-link-bg;
+            color: $text-color;
+            &:hover {
+                background-color: $component-hover-bg;
+            }
+            &.active {
+                background-color: $nav-link-active-bg;
+            }
         }
-      }
     }
-  }
 }
 
 .nav-tabs {
@@ -290,9 +330,16 @@ label,
 
 a.list-group-item {
 
-  color: $text-color2;
-  background-color: $palette1;
-
+  color: $text-color-secondary;
+  background-color: $palette2;
+  &:hover {
+      background-color: $component-hover-bg;
+  }
+  
+  &:focus {
+      background-color: $component-focus-bg;
+  }
+  
   &.active,
   &.active:hover,
 
@@ -333,11 +380,11 @@ a.list-group-item {
 .panel {
   &-default > .panel-heading {
     background-color: $panel-heading-bg;
-    color: $text-color2;
+    color: $text-color-secondary;
   }
   &-default > .panel-body {
     background-color: $panel-bg;
-    color: $text-color2;
+    color: $text-color-secondary;
   }
 }
 

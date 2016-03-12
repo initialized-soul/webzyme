@@ -1,7 +1,9 @@
 <!-- Default home page -->
 <div class="jumbotron jumbotron-fluid banner"></div>
 
-<div class="container-fluid logo"></div>
+<div class="container-fluid logo">
+    <img src="images/webzyme-small.png" alt="Webzyme">
+</div>
 
 <nav class="navbar navbar-light">
 
@@ -21,18 +23,6 @@
             <a class="nav-link" href="#">About</a>
         </li>
     </ul>
-
-    <form id="form_sequence_search" class="form-inline" role="search" onSubmit="return false;">
-        <div class="form-group">
-            <div class="input-group input-group-sm">
-                <input type="text" class="form-control" placeholder="Search" data-role="none">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
-                </span>
-                
-            </div>
-        </div>
-    </form>
             
     <div class="container-fluid">
 
@@ -42,6 +32,18 @@
 <div id="div_sequence_nav">
     
     <ul class="nav nav-tabs" role="tablist">
+        <li>
+            <form id="form_sequence_search" class="form-inline pull-xs-right" role="search" onSubmit="return false;">
+                <div class="form-group">
+                    <div class="input-group">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Search" data-role="none">
+                    </div>
+                </div>
+            </form>
+        </li>
         <li class="nav-item" role="button" name="remove">
             <p class="navbar-btn" name="remove">
                 <a href="#" class="btn btn-default" data-toggle="tooltip" data-placement="bottom" title="Remove Current Sequence">

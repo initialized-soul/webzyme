@@ -1,5 +1,52 @@
-$brand-primary:         #ff0067 !default;
-$brand-success:         #9900ff !default;
-$brand-info:            #e0ff3f !default;
-$brand-warning:         #f0ad4e !default;
-$brand-danger:          #d9534f !default;
+$brand-primary:              #FF0054 !default;
+$brand-success:              #9900ff !default;
+$brand-info:                 #e0ff3f !default;
+$brand-warning:              #f0ad4e !default;
+$brand-danger:               #d9534f !default;
+
+$palette0:		           	white;
+$palette1:			        #00ccff;
+$palette2:		        	#66e0ff;
+$palette3:		    	    #ccf5ff;
+
+$body-bg:                   white !default;
+
+$text-color:                black !default;
+$text-color-secondary:	    black !default;
+
+// MAIN COLORS
+$component-hover-bg:        $palette3 !default;
+$component-focus-bg:        $palette3 !default;
+$component-active-color:    #fff !default;
+
+$component-bg:				$palette1 !default;
+$component-active-bg:       $palette2 !default;
+$component-hover-bg:        $palette3 !default;
+
+// MAIN BORDER STYLES
+$border-radius:             0px !default;
+
+// NAV STYLES
+$navbar-padding:            3px !default;
+
+$nav-link-text-color:		$text-color-secondary !default;
+$nav-link-bg:				$component-bg !default;
+$nav-link-active-bg: 		$component-active-bg !default;
+$nav-link-border:			0px solid transparent !default;
+$nav-link-padding:          10px 15px !default;
+
+// PANELS
+$panel-bg:                    $palette3 !default;
+$panel-heading-bg:			  $palette2 !default;
+
+// INPUT CONTROLS
+$input-color:               $text-color !default;
+$input-border-color:        $palette1 !default;
+$input-group-margin:        6px !default;
+
+// BUTTONS
+$btn-height:                38px !default;
+$btn-padding:               10px 16px 10px 16px;
+
+// LABELS
+$lbl-default-color:         $text-color-secondary;

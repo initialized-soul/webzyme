@@ -6,10 +6,7 @@ $bootstrap-sass-asset-helper: false !default;
 //
 //## Gray and brand colors for use across Bootstrap.
 
-$palette0:			#030d0d;
-$palette1:			#092020;
-$palette2:			#174d49;
-$palette3:			#239872;
+
 
 $border-color: 		 black;
 
@@ -24,11 +21,7 @@ $gray-lighter:           lighten($gray-base, 80%) !default;
 //
 //## Settings for some of the most global styles.
 
-//** Background color for `<body>`.
-$body-bg:               $palette0 !default;
-//** Global text color on `<body>`.
-$text-color:            black !default;
-$text-color2:			white !default;
+
 
 //** Global textual link color.
 $link-color:            $brand-primary !default;
@@ -105,12 +98,7 @@ $border-radius-base:        0px !default;
 $border-radius-large:       0px !default;
 $border-radius-small:       0px !default;
 
-//** Global color for active items (e.g., navs or dropdowns).
-$component-active-color:    #fff !default;
-//** Global background color for active items (e.g., navs or dropdowns).
-$component-bg:				$palette1 !default;
-$component-active-bg:       $palette2 !default;
-$component-hover-bg:       $palette3 !default;
+
 
 //** Width of the `border` for generating carets that indicator dropdowns.
 $caret-width-base:          4px !default;
@@ -171,9 +159,6 @@ $btn-danger-border:              transparent !default;
 
 $btn-link-disabled-color:        $gray-light !default;
 
-// Allows for customizing button radius independently from global border radius
-$btn-border-radius:			     10px !default;
-
 //== Forms
 //
 //##
@@ -183,8 +168,6 @@ $input-bg:                       #fff !default;
 //** `<input disabled>` background color
 $input-bg-disabled:              $gray-lighter !default;
 
-//** Text color for `<input>`s
-$input-color:                    $body-bg !default;
 //** `<input>` border color
 $input-border:                   $border-color !default;
 
@@ -348,13 +331,6 @@ $container-lg:                 $container-large-desktop !default;
 //##
 
 // Basics of a navbar
-$navbar-height:                    40px !default;
-$navbar-margin-bottom:             $line-height-computed !default;
-$navbar-border-radius:             $border-radius-base !default;
-$navbar-padding-horizontal:        floor(($grid-gutter-width / 2)) !default;
-$navbar-padding-vertical:          (($navbar-height - $line-height-computed) / 2) !default;
-$navbar-collapse-max-height:       340px !default;
-
 $navbar-default-color:             white;
 $navbar-default-bg:                $palette2;
 $navbar-default-border:            $palette2;
@@ -410,14 +386,6 @@ $navbar-inverse-toggle-border-color:        transparent !default;
 //##
 
 //=== Shared nav styles
-$nav-link-text-color:						$text-color2 !default;
-$nav-link-bg:								$component-bg !default;
-$nav-link-hover-bg:                         $component-hover-bg !default;
-$nav-link-active-bg: 						$component-active-bg !default;
-$nav-link-border:							0px solid transparent !default;
-$nav-link-border-radius:					40px 10px 0px 0px !default;
-
-$nav-link-padding:                          10px 15px !default;
 
 $nav-disabled-link-color:                   $gray-light !default;
 $nav-disabled-link-hover-color:             $gray-light !default;
@@ -702,8 +670,7 @@ $list-group-link-heading-color: $text-color !default;
 //##
 
 
-$panel-bg:                    $palette1 !default;
-$panel-heading-bg:			  $palette2 !default;
+
 $panel-body-padding:          15px !default;
 $panel-heading-padding:       10px 15px !default;
 $panel-footer-padding:        $panel-heading-padding !default;

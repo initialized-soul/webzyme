@@ -43,7 +43,7 @@ var SequenceSearchView = Backbone.View.extend({
 	},
 	
 	_getCurrentTab: function() {
-		var activeTabId = $('.tab-pane, .active').data('id');
+		var activeTabId = $('.nav-link.active').data('id');
 		return this.collection.get(activeTabId);
 	},
 

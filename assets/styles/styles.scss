@@ -1,10 +1,23 @@
 .banner {
-	background-color: $palette1;
+	background-color: $palette3;
+    min-height: 200px;
 }
 
 .logo {
 	background-color: $palette1;
 	min-height: 50px;
+    padding: 5px;
+    padding-left: 25px;
+}
+
+.sequence-outer {
+    display: block;
+    text-align: center;
+}
+
+.sequence-inner {
+    max-width: 1200px;
+    margin: auto;
 }
 
 .sequence-font {
@@ -43,6 +56,11 @@
 .sequence-highlight-hover-success {background: rgba($brand-success, 1.0)}
 .sequence-highlight-hover-warning {background: rgba($brand-warning, 1.0)}
 .sequence-highlight-hover-danger {background: rgba($brand-danger, 1.0)}
+
+.sequence-position {
+    margin: 0px;
+    display: inline;
+}
 
 .search-error {color: red;}
 
