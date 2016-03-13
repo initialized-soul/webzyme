@@ -1,10 +1,10 @@
 .banner {
-	background-color: $palette3;
+	background-color: $palette1;
     min-height: 200px;
 }
 
 .logo {
-	background-color: $palette1;
+	@include logo-gradient();
 	min-height: 50px;
     padding: 5px;
     padding-left: 25px;
