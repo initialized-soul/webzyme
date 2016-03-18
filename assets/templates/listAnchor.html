@@ -1,4 +1,4 @@
-<a href="#" class="row list-group-item" value="<%= highlight.cid %>" style="margin-top:3px">
+<a href="#" class="row list-group-item sequence-font" value="<%= highlight.cid %>" style="margin-top:3px">
 	<div class="col-xs-9 col-md-11">
 		<b><%= highlight.get('text') %></b>
 	</div>
@@ -6,7 +6,7 @@
 	  	<span class="label label-pill label-<%= highlight.getCssClass() %>"> 
 	    	<b><%= highlight.get('range')[0] + 1 %></b>
 	    	<span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span>
-	    	<b><%= highlight.get('range')[1] %></b> 
+	    	<b><%= highlight.get('range')[1] + 1 %></b> 
 	  	</span>
 	</div>
 </a>

@@ -36,12 +36,22 @@ var HighlightListView = Backbone.View.extend({
 		this.mouseHoverSequence(event, false);
 	},
 
-	mouseHoverSequence: function(event, flag) {
-		F.Maybe(this.collection.get(this.getAnchorValue(event))).bind(function(model){
-			model.set('highlight', flag);
+	mouseHoverSequence: function(event, mouseInFlag) {
+		this._getHighlightModelMaybe(event).bind(function(model) {
+			var $spanEl = $('span[name=' + model.get('name') + ']');
+            var hoverClass = 'sequence-highlight-hover-' + model.getCssClass();
+            if (mouseInFlag) {
+                $spanEl.addClass(hoverClass);
+            } else {
+                $spanEl.removeClass(hoverClass);
+            }
 		});
 	},
 
+    _getHighlightModelMaybe: function(event) {
+        return F.Maybe(this.collection.get(this.getAnchorValue(event)));
+    },
+    
 	removeAllHighlights: function() {
 		this.$el.html('');
 	},

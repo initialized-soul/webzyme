@@ -7,8 +7,10 @@ var HighlightCollection = Backbone.Collection.extend({
 		this.$parent = options.$parent;
 		this.rootModel = new Backbone.Model({
 			name: 'sequence',
-			start: 0,
-			end: this.sequenceModel.get('sequence').length - 1,
+			range: [
+                0,
+			    this.sequenceModel.get('sequence').length - 1
+            ],
 			text: this.sequenceModel.get('sequence'),
 			depth: -1
 		});
@@ -23,32 +25,33 @@ var HighlightCollection = Backbone.Collection.extend({
 
 	createDocumentRange: function(range) {
 		var rangeEl = document.createRange();
-		var startModel = this.getDeepestHighlight(range[0]);
-		var endModel = this.getDeepestHighlight(range[1]);
-		var startNode = this._getTextNode(startModel, range[0], true);
-		var endNode = this._getTextNode(endModel, range[1], false);
+		var startSpan = this.getDeepestSpan(range[0]);
+		var endSpan = this.getDeepestSpan(range[1]);
+		var startNode = this._getTextNode(startSpan, range[0], true);
+		var endNode = this._getTextNode(endSpan, range[1], false);
 		rangeEl.setStart(startNode[0], startNode[1]);
-		rangeEl.setEnd(endNode[0], endNode[1]);
+		rangeEl.setEnd(endNode[0], endNode[1] + 1);
 		return rangeEl;
 	},
 	
-	getDeepestHighlight: function(index) {
-		return this.reduce(function(deepest, model){
-			if (model.get('start') <= index && model.get('end') >= index){
-				if (model.get('depth') > deepest.get('depth')){
-					return model;
+    getDeepestSpan: function(index) {
+        var spans = $('span[data-depth]');
+        return R.reduce(function(deepest, span) {
+			if (Dom.intAttr(span, 'data-start') <= index && Dom.intAttr(span, 'data-end') > index) {
+                if (Dom.intAttr(span, 'data-depth') > Dom.intAttr(deepest, 'data-depth')) {
+					return span;
 				}
 			}
 			return deepest;
-		}, this.rootModel);
+        }, spans[0], spans);
 	},
-
-	_getTextNode: function(model, offset, isStart) {
-		var current = model.get('start');
-		var children = this._getChildren(model); 
+    
+	_getTextNode: function(span, offset, isStart) {
+		var current = Dom.intAttr(span, 'data-start');
+		var children = span.childNodes;
 		for (var i = 0; i < children.length; i++) {
 			var node = children[i];
-			var length = this._getText(node).length
+            var length = this._getText(node).length
 			if (Dom.isTextNode(node)) {
 				current += length;
 			} else {
@@ -63,11 +66,7 @@ var HighlightCollection = Backbone.Collection.extend({
 		}
 		throw 'Cannot find text node for offset ' + offset;
 	},
-
-	_getChildren: function(model) {
-		return this.$parent.find('span[name=' + model.get('name') + ']').get(0).childNodes;
-	},
-
+    
 	_getText: function(el) {
 		return F.stripWS(el.nodeValue);
 	},

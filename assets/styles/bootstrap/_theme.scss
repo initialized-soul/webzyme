@@ -33,6 +33,33 @@ background: linear-gradient(to bottom,  #505459 0%,#303235 19%,#000000 100%); /*
 filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505459', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
 }                   
 
+// FONTS
+@font-face {
+    font-family:            'Sansita One';
+    src:                    url('../fonts/sansita/SansitaOne.ttf');
+}
+                     ;
+$font-family-serif:         'Trebuchet MS', Helvetica, Arial, sans-serif !default;
+$font-family-monospace:     'Lucida Console', Monaco, monospace !default;
+$font-family-fancy:         'Sansita One' !default;
+$font-family-base:          'Sansita One' !default;
+
+$font-size-base:          14px !default;
+$font-size-large:         ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-small:         ceil(($font-size-base * 0.85)) !default; // ~12px
+
+$font-size-h1:            floor(($font-size-base * 2.6)) !default; // ~36px
+$font-size-h2:            floor(($font-size-base * 2.15)) !default; // ~30px
+$font-size-h3:            ceil(($font-size-base * 1.7)) !default; // ~24px
+$font-size-h4:            ceil(($font-size-base * 1.25)) !default; // ~18px
+$font-size-h5:            $font-size-base !default;
+$font-size-h6:            ceil(($font-size-base * 0.85)) !default; // ~12px
+
+//** Unit-less `line-height` for use in components like buttons.
+$line-height-base:        1.428571429 !default; // 20/14
+//** Computed "line-height" (`font-size` * `line-height`) for use with `margin`, `padding`, etc.
+$line-height-computed:    floor(($font-size-base * $line-height-base)) !default; // ~20px
+
 // MAIN BORDER STYLES
 $border-radius:             0px !default;
 
@@ -59,4 +86,12 @@ $btn-height:                38px !default;
 $btn-padding:               10px 16px 10px 16px;
 
 // LABELS
-$lbl-default-color:         $text-color-secondary;
+$label-border-radius:         10px !default;
+$label-default-bg:            white !default;
+$label-primary-bg:            $brand-primary !default;
+$label-success-bg:            $brand-success !default;
+$label-info-bg:               $brand-info !default;
+$label-warning-bg:            $brand-warning !default;
+$label-danger-bg:             $brand-danger !default;
+$label-color:                 black !default;
+$label-link-hover-color:      #fff !default;

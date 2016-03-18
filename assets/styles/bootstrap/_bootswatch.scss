@@ -141,12 +141,9 @@ textarea {
   color: $input-color;
 }
 
-.label-default {
-    color: $lbl-default-color;
-}
-
 .label {
   border-radius:  $label-border-radius;
+  font-family: $font-family-serif
 }
 
 label,
@@ -155,6 +152,7 @@ label,
 .help-block {
   font-size: 12px;
   font-weight: 300;
+  font-family: $font-family-serif
 }
 
 .input-addon,

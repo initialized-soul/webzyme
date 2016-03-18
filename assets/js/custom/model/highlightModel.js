@@ -1,7 +1,13 @@
 var HighlightModel = Backbone.Model.extend({
 	
 	getCssClass: function() {
-		switch(this.get('type')) {
+        var cssClass = this._getCssClassByType();
+        return this.get('highlight') ? 'hover-' + cssClass : cssClass;
+		
+	},
+    
+    _getCssClassByType: function() {
+        switch(this.get('type')) {
 			case 'user':
 				return 'primary';
 			case 'search':
@@ -10,6 +16,6 @@ var HighlightModel = Backbone.Model.extend({
 				return 'info';
 			default:
 				return 'default';
-		}
-	}
+		};
+    }
 });

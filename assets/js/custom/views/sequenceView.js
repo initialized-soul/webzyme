@@ -47,56 +47,59 @@ var SequenceView = Backbone.View.extend({
  		var that = this;
  		this.$el.contextmenu({
 			target: this.options.$contextMenuEl,
-			before: function(event) {
-			    that._saveUserSelection();
+			before: function() {
+			    that.userSelection = that._getUserSelection();
 		  	},
 			onItem: function(context, event) {
 				if (event.target.name === 'highlight') {
-					that._highlight();
+					that._highlight(that.userSelection);
 				} else {
-					that._toNewSequence();
+					that._toNewSequence(that.userSelection);
 				}
-
-  			},
-  			onKeyUp: function(event) {
-  				if (event.keyCode === 72) {
-  					that._highlight();
-  					this.closemenu(event);
-  				} else if (event.keycode === 78) {
-  					that._toNewSequence();
-  					this.closemenu(event);
-  				}
   			}
 		});
  	},
 
- 	_toNewSequence: function() {
+ 	_toNewSequence: function(userSelection) {
  		var that = this;
-		F.Maybe(this.userSelection.text).bind(function(text) {
+		F.Maybe(userSelection).bind(function(selection) {
 			that.trigger('newsequence', new SequenceModel({
 				name: 'New Sequence',
-				sequence: text
+				sequence: selection.text
 			}));
 		});
  	},
 
  	keyDown: function(event) {
- 		if (F.inArray(event.keyCode, this.options.basicKeys)){
+        var that = this;
+ 		if (F.inArray(event.keyCode, this.options.basicKeys)) { // Allow basic keys
  			return true;
- 		} else if (event.ctrlKey || event.metaKey){
- 			if (!F.inArray(event.keyCode, this.options.ctrlKeys)){
+ 		} else if (event.ctrlKey || event.metaKey) { // Allow certain keys when CTRL is held
+ 			if (!F.inArray(event.keyCode, this.options.ctrlKeys)) {
  				return false;
  			}
- 		} else if (event.keyCode === 13){ // Disallow enter
+ 		} else if (event.keyCode === 13) { // Disallow enter
       		return false;
-    	} else if (!F.inArray(event.keyCode, [65, 84, 71, 67, 78])){ // Allow only ATCGN
-    		return false;
+    	} else {
+            return F.Maybe(this._getUserSelection()).maybeFn(function() {
+                return F.inArray(event.keyCode, [65, 84, 71, 67, 78]); // Allow only ATCGN
+            }, function(selection) {
+                if (event.keyCode === 72) { // highlight
+                    that._highlight(selection);
+                } else if (event.keycode === 78) { // new sequence
+                    that._toNewSequence(selection);
+                }
+                that.options.$contextMenuEl.removeClass('open');
+                return false;
+            });
     	}
  	},
 
- 	keyUp: function() {
- 		this._displayCaretPosition(this._findCaretPosition());
- 		this.refreshModel();
+ 	keyUp: function(event) {
+        if (!F.inArray(event.keyCode, [37, 38, 39, 40])){ // Arrow keys
+    		this._displayCaretPosition(this._findCaretPosition());
+ 		    this.refreshModel();
+        }
  	},
 
  	refreshModel: function() {
@@ -108,41 +111,43 @@ var SequenceView = Backbone.View.extend({
  	},
 
  	_findCaretPosition: function() {
- 		var selection = this._getUserSelection();
- 		var spaced = this._getSpacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
- 		var unspaced = this._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
- 		return (spaced % 11 === 0) ? '#' : unspaced;
+         var that = this;
+        return F.Maybe(this._getUserSelection()).maybe('#', function(selection) {
+            var spaced = that._getSpacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+            var unspaced = that._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+            return (spaced % 11 === 0) ? '#' : unspaced;
+        });
  	},
 
-	_highlight: function() {
+	_highlight: function(userSelection) {
 		var that = this;
-		var range = this.getHighlightedRange(this.userSelection);
-		F.Maybe(this.userSelection.text).bind(function(text) {
-			that.collection.add({
+        F.Maybe(userSelection).bind(function(selection) {
+            var range = that.getHighlightedRange(selection);            
+		    that.collection.add({
 				'name' : that.collection.generateSpanName(range), //prevents duplicates
 				'range' : range,
-				'text' : F.stripWS(text),
+				'text' : F.stripWS(selection.text),
 				'type' : 'user'
 			});
 			that._restoreCaretPosition();
-		});
+        });
 	},
 
 	getHighlightedRange: function(selection) {
 		var a = this._getUnspacedGlobalOffset(selection.anchorNode, selection.anchorOffset);
 		var b = this._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset);
-		return [Math.min(a,b), Math.max(a,b)];
+		return [Math.min(a,b), Math.max(a,b) - 1];
 	},
 
 	_getSpacedGlobalOffset: function(textNode, offset) {
 		var beforeSpans = this._getLeadingSpans(textNode);
-		var sequence = this._getSequenceFromSpans(beforeSpans);
+		var sequence = Dom.joinTextNodes(beforeSpans);
 		return sequence.length + offset;
 	},
 
 	_getUnspacedGlobalOffset: function(textNode, offset) {
 		var beforeSpans = this._getLeadingSpans(textNode);
-		var sequence = F.stripWS(this._getSequenceFromSpans(beforeSpans));
+		var sequence = F.stripWS(Dom.joinTextNodes(beforeSpans));
 		var cleanOffset = this._getUnspacedOffset(textNode, offset);
 		return sequence.length + cleanOffset;
 	},
@@ -152,8 +157,6 @@ var SequenceView = Backbone.View.extend({
 		var index = R.max(0, $.inArray(span, allSpans));
 		return R.take(index, allSpans);
 	},
-
-	_getSequenceFromSpans: R.compose(R.join(''), R.pluck('nodeValue')),
 
 	_getUnspacedOffset: function(textNode, offset) {
 		var nSpaces = this._countSpaces(textNode.nodeValue.substr(0, offset));
@@ -169,44 +172,53 @@ var SequenceView = Backbone.View.extend({
 		R.map(function(model) {
 			var rangeEl = that.collection.createDocumentRange(model.get('range'));
 			var selectionContents = rangeEl.extractContents();
-			var span = that.createSequenceSpan(selectionContents, model);
-			rangeEl.insertNode(span);
+			var spanEl = that.createSequenceSpan(selectionContents, model);
+			rangeEl.insertNode(spanEl);
+            model.set('span', spanEl);
 		}, F.array(models));
 		this._clearUserSelection();
 		this._cleanTextNodes();
-		this.calculateSpanDepths();
+		this._calculateSpanDepths();
+        this._calculateSpanRanges();
 	},
 
 	createSequenceSpan: function(contents, model) {
 		var span = document.createElement('span');
 		span.appendChild(contents);
-		span.setAttribute('class', 'sequence-highlight-' + model.getCssClass());
+		span.setAttribute('class', 'sequence-highlight sequence-highlight-' + model.getCssClass());
 		span.setAttribute('name', model.get('name'));
+        span.setAttribute('data-depth', 0);
 		span.setAttribute('data-start', model.get('range')[0]);
 		span.setAttribute('data-end', model.get('range')[1]);
+        span.setAttribute('data-length', model.get('range')[1] - model.get('range')[0]);
 		return span;
 	},
 
-	_saveUserSelection: function() {
-		var selection = this._getUserSelection();
-		this.userSelection = {
-			text: selection.toString(),
-			anchorNode : selection.anchorNode,
-			anchorOffset : selection.anchorOffset,
-			focusNode : selection.focusNode,
-			focusOffset : selection.focusOffset,
-			range: selection.getRangeAt(0)
-		};
-	},
-
 	_getUserSelection: function() {
-		if (document.selection) {
-        	return document.selection;
-	    } else if (window.getSelection()) {
-        	return window.getSelection();
-	    }
+		return F.Maybe(this._getDocumentSelection()).maybe(null, function(selection) {
+            return F.Maybe(selection.toString()).maybe(null, function(text) {
+                return {
+                    text: text,
+                    anchorNode : selection.anchorNode,
+                    anchorOffset : selection.anchorOffset,
+                    focusNode : selection.focusNode,
+                    focusOffset : selection.focusOffset,
+                    range: selection.getRangeAt(0)
+                };
+            });
+        });
 	},
 
+    _getDocumentSelection: function() {
+        if (window.getSelection()) {
+        	return window.getSelection();
+	    } else if (document.selection) {
+            return document.selection;
+        } else {
+            return null;
+        }
+    },
+    
 	_clearUserSelection: function() {
 	    if (document.selection) {
         	document.selection.empty();
@@ -223,6 +235,7 @@ var SequenceView = Backbone.View.extend({
 	render: function() {
 		this._calculateLineProperties();
 		this._printSequence();
+        this._adjustRootSpanAttributes();
 		this._printLineNumbers();
 		this._restoreCaretPosition();
 		this._highlightSpan(this.collection.models);
@@ -238,6 +251,10 @@ var SequenceView = Backbone.View.extend({
 		this.el.innerHTML = this._getSpacedSequence();
 	},
 
+    _adjustRootSpanAttributes: function() {
+        this.el.setAttribute('data-end', this.model.get('sequence').length);   
+    },
+    
 	_getSpacedSequence: function() {
 		var sequence = this.model.get('sequence').split('');
 		var fn = R.compose(R.trim, R.join('')); 
@@ -279,13 +296,13 @@ var SequenceView = Backbone.View.extend({
 	},
 	
 	_displayCaretPosition: function(caretPosition) {
- 		this.options.currentPositionEl.innerHTML = '<b>' + caretPosition + '</b>';
+ 		this.options.currentPositionEl.innerHTML = caretPosition;
  	},
 
 	removeSpan: function(models) {
 		var that = this;
 		R.map(function(model){
-			that.getSpans(model).contents().unwrap();			
+			that._getSpans(model).contents().unwrap();			
 		}, F.array(models));
 		this._cleanTextNodes();
 	},
@@ -309,19 +326,45 @@ var SequenceView = Backbone.View.extend({
 		el.normalize();
 	},
 
-	calculateSpanDepths: function() {
-		var that = this;
-		this.collection.each(function(model){
-			var span = that._first('span[name=' + model.get('name') + ']');
-			var depth = span.parentsUntil(that.$el).length;
-			model.set('depth', depth);
-		});
+	_calculateSpanDepths: function() {
+        var that = this;
+        this.$el.find('span').each(function() {
+            var $span = $(this);
+            var depth = $span.parentsUntil(that.$el).length;
+            $span.attr('data-depth', depth);
+        });
 	},
 
+    _calculateSpanRanges: function() {
+        var that = this;
+        this.$el.find('span').each(function() {
+            var clones = that.$el.find('span[name=' + this.getAttribute('name') + ']');
+            if (clones.length > 1) {
+                that._renameSpanClones(clones);
+            }
+        });
+    },
+    
+    _renameSpanClones: function(clones) {
+        var sequence = '';
+        var offset = parseInt(clones[0].getAttribute('data-start'));
+        clones.each(function() {
+            this.setAttribute('data-start', offset); 
+            var unspacedText = F.stripWS(Dom.getText(this));
+            offset += unspacedText.length;
+            this.setAttribute('data-end', offset - 1);
+            this.setAttribute('data-length', unspacedText.length);
+        });
+    },
+    
+    _firstSpan: function(model) {
+		return this.$el.find('span[name=' + model.get('name') + ']').first();
+	},
+       
 	mouseover: function(models) {
 		var that = this;
 		R.map(function(model){
-			var $spans = that.getSpans(model);
+			var $spans = that._getSpans(model);
 			if (model.get('highlight')){
 				$spans.addClass('sequence-highlight-hover-' + model.getCssClass());
 			} else {
@@ -330,11 +373,7 @@ var SequenceView = Backbone.View.extend({
 		}, F.array(models));
 	},
 
-	getSpans: function(model) {
+	_getSpans: function(model) {
 		return this.$el.find('span[name=' + model.get('name') + ']');
-	},
-
-	_first: function(criteria) {
-		return this.$el.find(criteria).first();
 	}
 });

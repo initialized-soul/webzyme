@@ -187,7 +187,7 @@
 	};
 
 	$.fn.contextmenu.Constructor = ContextMenu;
-
+    
 	/* APPLY TO STANDARD CONTEXT MENU ELEMENTS
 	 * =================================== */
 

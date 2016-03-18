@@ -10,6 +10,11 @@
     padding-left: 25px;
 }
 
+.fancy-font {
+    font-family: $font-family-fancy;
+    font-size: 2em;
+}
+
 .sequence-outer {
     display: block;
     text-align: center;
@@ -25,37 +30,23 @@
 	font-weight: bold;
 }
 
-.sequence-highlight {border-radius: 6px;}
-
-.sequence-highlight-primary {
-	@extend .sequence-highlight;
-	background: rgba($brand-primary,0.3);
+.sequence-highlight {
+    border-radius: 6px;
 }
 
-.sequence-highlight-info {
-	@extend .sequence-highlight;
-	background: rgba($brand-info,0.3);
-}
+$sequence-highlight-alpha:          0.3;
+.sequence-highlight-primary {       background: rgba($brand-primary, $sequence-highlight-alpha);}
+.sequence-highlight-info {          background: rgba($brand-info, $sequence-highlight-alpha);}
+.sequence-highlight-success {       background: rgba($brand-success, $sequence-highlight-alpha);}
+.sequence-highlight-warning {       background: rgba($brand-warning, $sequence-highlight-alpha);}
+.sequence-highlight-danger {        background: rgba($brand-danger, $sequence-highlight-alpha);}
 
-.sequence-highlight-success {
-	@extend .sequence-highlight;
-	background: rgba($brand-success,0.3);
-}
-
-.sequence-highlight-warning {
-	@extend .sequence-highlight;
-	background: rgba($brand-warning,0.3);
-}
-
-.sequence-highlight-danger {
-	@extend .sequence-highlight;
-	background: rgba($brand-danger,0.3);
-}
-
-.sequence-highlight-hover-info {background: rgba($brand-info, 1.0)}
-.sequence-highlight-hover-success {background: rgba($brand-success, 1.0)}
-.sequence-highlight-hover-warning {background: rgba($brand-warning, 1.0)}
-.sequence-highlight-hover-danger {background: rgba($brand-danger, 1.0)}
+$sequence-highlight-hover-alpha:    1.0;
+.sequence-highlight-hover-primary { background: rgba($brand-primary, $sequence-highlight-hover-alpha);}
+.sequence-highlight-hover-info {    background: rgba($brand-info, $sequence-highlight-hover-alpha);}
+.sequence-highlight-hover-success { background: rgba($brand-success, $sequence-highlight-hover-alpha);}
+.sequence-highlight-hover-warning { background: rgba($brand-warning, $sequence-highlight-hover-alpha);}
+.sequence-highlight-hover-danger {  background: rgba($brand-danger, $sequence-highlight-hover-alpha);}
 
 .sequence-position {
     margin: 0px;
@@ -72,4 +63,8 @@
 	-moz-user-select: none;
 	-o-user-select: none;
 	user-select: none;
+}
+
+.bold {
+    font-weight: bold;
 }
