@@ -86,7 +86,7 @@ var SequenceView = Backbone.View.extend({
             }, function(selection) {
                 if (event.keyCode === 72) { // highlight
                     that._highlight(selection);
-                } else if (event.keycode === 78) { // new sequence
+                } else if (event.keyCode === 78) { // new sequence
                     that._toNewSequence(selection);
                 }
                 that.options.$contextMenuEl.removeClass('open');
@@ -243,7 +243,7 @@ var SequenceView = Backbone.View.extend({
 
 	_calculateLineProperties: function() {
 		this.line = {};
-		this.line.capacity = Dom.getLineCapacity(this.el);
+		this.line.capacity = Dom.getLineCapacity(this.el); var_dump(this.line.capacity);
 		this.line.nColumns = getNumLineColumns(this.line.capacity);
 	},
 
