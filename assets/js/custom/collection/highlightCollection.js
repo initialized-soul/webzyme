@@ -6,7 +6,6 @@ var HighlightCollection = Backbone.Collection.extend({
 		this.sequenceModel = options.sequenceModel;
 		this.$parent = options.$parent;
 		this.rootModel = new Backbone.Model({
-			name: 'sequence',
 			range: [
                 0,
 			    this.sequenceModel.get('sequence').length - 1
@@ -14,30 +13,30 @@ var HighlightCollection = Backbone.Collection.extend({
 			text: this.sequenceModel.get('sequence'),
 			depth: -1
 		});
-		this.listenTo(this.sequenceModel, 'change', this.onModelChange);
+		this.listenTo(this.sequenceModel, 'change', this._onModelChange);
 	},
 
-	onModelChange: function() {
+	_onModelChange: function() {
 		var sequence = this.sequenceModel.get('sequence');
 		this.rootModel.set('end', sequence.length - 1);
 		this.rootModel.set('text', sequence);
 	},
-
+    
 	createDocumentRange: function(range) {
 		var rangeEl = document.createRange();
-		var startSpan = this.getDeepestSpan(range[0]);
-		var endSpan = this.getDeepestSpan(range[1]);
+		var startSpan = this._getDeepestSpan(range[0]);
+		var endSpan = this._getDeepestSpan(range[1]);
 		var startNode = this._getTextNode(startSpan, range[0], true);
-		var endNode = this._getTextNode(endSpan, range[1], false);
+		var endNode = this._getTextNode(endSpan, range[1], false); var_dump([range[0], range[1], startNode[1], endNode[1], startSpan.getAttribute('data-cid'), endSpan.getAttribute('data-cid'), startNode[2]]);
 		rangeEl.setStart(startNode[0], startNode[1]);
 		rangeEl.setEnd(endNode[0], endNode[1] + 1);
 		return rangeEl;
 	},
 	
-    getDeepestSpan: function(index) {
+    _getDeepestSpan: function(index) {
         var spans = $('span[data-depth]');
         return R.reduce(function(deepest, span) {
-			if (Dom.intAttr(span, 'data-start') <= index && Dom.intAttr(span, 'data-end') > index) {
+			if (Dom.intAttr(span, 'data-start') <= index && Dom.intAttr(span, 'data-end') >= index) {
                 if (Dom.intAttr(span, 'data-depth') > Dom.intAttr(deepest, 'data-depth')) {
 					return span;
 				}
@@ -54,15 +53,15 @@ var HighlightCollection = Backbone.Collection.extend({
             var length = this._getText(node).length
 			if (Dom.isTextNode(node)) {
 				current += length;
+                if (current >= offset) {
+                    return [
+                        node,
+                        this._spaced(offset, isStart) - this._spaced(current - length)
+                    ];
+                }
 			} else {
-				current = parseInt(node.getAttribute('data-end'));
+				current = parseInt(node.getAttribute('data-end')) + 1;
 			}
-			if (current >= offset) {
-				return [
-					node,
-					this._spaced(offset, isStart) - this._spaced(current - length)
-				];
-			} 
 		}
 		throw 'Cannot find text node for offset ' + offset;
 	},
@@ -75,7 +74,7 @@ var HighlightCollection = Backbone.Collection.extend({
 		return index + getNumLineSpaces(index, isStart);
 	},
 
-	generateSpanName: function(range) {
-		return 'Span-' + range.join('-');
+	generateSpanName: function(range, highlightType) {
+		return 'Span-' + range.join('-') + '-' + F.Maybe(highlightType).def('');
 	},
 });

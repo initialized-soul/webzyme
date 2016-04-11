@@ -1,4 +1,4 @@
-var SequenceView = Backbone.View.extend({
+var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 	
 	defaults: {
 		basicKeys: [
@@ -35,7 +35,7 @@ var SequenceView = Backbone.View.extend({
 	initialize: function(options) {
 		this._initializeContextMenu();
 		this.listenTo(this.model, 'change', this.onModelChange);
-		this.listenTo(this.collection, 'add', this._highlightSpan);
+		this.listenTo(this.collection, 'add', this._renderHighlights);
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
 		this.listenTo(this.collection, 'reset', this.render);
@@ -52,7 +52,7 @@ var SequenceView = Backbone.View.extend({
 		  	},
 			onItem: function(context, event) {
 				if (event.target.name === 'highlight') {
-					that._highlight(that.userSelection);
+					that._highlightAction(that.userSelection);
 				} else {
 					that._toNewSequence(that.userSelection);
 				}
@@ -85,7 +85,7 @@ var SequenceView = Backbone.View.extend({
                 return F.inArray(event.keyCode, [65, 84, 71, 67, 78]); // Allow only ATCGN
             }, function(selection) {
                 if (event.keyCode === 72) { // highlight
-                    that._highlight(selection);
+                    that._highlightAction(selection);
                 } else if (event.keyCode === 78) { // new sequence
                     that._toNewSequence(selection);
                 }
@@ -119,13 +119,11 @@ var SequenceView = Backbone.View.extend({
         });
  	},
 
-	_highlight: function(userSelection) {
+	_highlightAction: function(userSelection) {
 		var that = this;
-        F.Maybe(userSelection).bind(function(selection) {
-            var range = that.getHighlightedRange(selection);            
+        F.Maybe(userSelection).bind(function(selection) {         
 		    that.collection.add({
-				'name' : that.collection.generateSpanName(range), //prevents duplicates
-				'range' : range,
+				'range' : that.getHighlightedRange(selection),
 				'text' : F.stripWS(selection.text),
 				'type' : 'user'
 			});
@@ -167,33 +165,6 @@ var SequenceView = Backbone.View.extend({
 		return text.split(' ').length - 1;
 	},
 
-	_highlightSpan: function(models) {
-		var that = this;
-		R.map(function(model) {
-			var rangeEl = that.collection.createDocumentRange(model.get('range'));
-			var selectionContents = rangeEl.extractContents();
-			var spanEl = that.createSequenceSpan(selectionContents, model);
-			rangeEl.insertNode(spanEl);
-            model.set('span', spanEl);
-		}, F.array(models));
-		this._clearUserSelection();
-		this._cleanTextNodes();
-		this._calculateSpanDepths();
-        this._calculateSpanRanges();
-	},
-
-	createSequenceSpan: function(contents, model) {
-		var span = document.createElement('span');
-		span.appendChild(contents);
-		span.setAttribute('class', 'sequence-highlight sequence-highlight-' + model.getCssClass());
-		span.setAttribute('name', model.get('name'));
-        span.setAttribute('data-depth', 0);
-		span.setAttribute('data-start', model.get('range')[0]);
-		span.setAttribute('data-end', model.get('range')[1]);
-        span.setAttribute('data-length', model.get('range')[1] - model.get('range')[0]);
-		return span;
-	},
-
 	_getUserSelection: function() {
 		return F.Maybe(this._getDocumentSelection()).maybe(null, function(selection) {
             return F.Maybe(selection.toString()).maybe(null, function(text) {
@@ -218,14 +189,6 @@ var SequenceView = Backbone.View.extend({
             return null;
         }
     },
-    
-	_clearUserSelection: function() {
-	    if (document.selection) {
-        	document.selection.empty();
-	    } else if (window.getSelection) {
-        	window.getSelection().removeAllRanges();
-	    }
-	},
 
 	onModelChange: function() {
 		this.collection.reset();
@@ -238,7 +201,7 @@ var SequenceView = Backbone.View.extend({
         this._adjustRootSpanAttributes();
 		this._printLineNumbers();
 		this._restoreCaretPosition();
-		this._highlightSpan(this.collection.models);
+		this._renderHighlights(this.collection.models);
 	},
 
 	_calculateLineProperties: function() {
@@ -306,61 +269,7 @@ var SequenceView = Backbone.View.extend({
 		}, F.array(models));
 		this._cleanTextNodes();
 	},
-	
-	_cleanTextNodes: function() {
-		var that = this;
-		this._concatenateBrokenText(this.el);
-		this.$el.find('*').each(function(index, el) {
-			that._simplifyNode(el);
-		});
-	},
-
-	_simplifyNode: function(el) {
-		this._concatenateBrokenText(el);
-		F.Maybe(el.childNodes[0]).onNothing(function() {
-			el.parentNode.removeChild(el);
-		});
-	},
-
-	_concatenateBrokenText: function(el) {
-		el.normalize();
-	},
-
-	_calculateSpanDepths: function() {
-        var that = this;
-        this.$el.find('span').each(function() {
-            var $span = $(this);
-            var depth = $span.parentsUntil(that.$el).length;
-            $span.attr('data-depth', depth);
-        });
-	},
-
-    _calculateSpanRanges: function() {
-        var that = this;
-        this.$el.find('span').each(function() {
-            var clones = that.$el.find('span[name=' + this.getAttribute('name') + ']');
-            if (clones.length > 1) {
-                that._renameSpanClones(clones);
-            }
-        });
-    },
     
-    _renameSpanClones: function(clones) {
-        var sequence = '';
-        var offset = parseInt(clones[0].getAttribute('data-start'));
-        clones.each(function() {
-            this.setAttribute('data-start', offset); 
-            var unspacedText = F.stripWS(Dom.getText(this));
-            offset += unspacedText.length;
-            this.setAttribute('data-end', offset - 1);
-            this.setAttribute('data-length', unspacedText.length);
-        });
-    },
-    
-    _firstSpan: function(model) {
-		return this.$el.find('span[name=' + model.get('name') + ']').first();
-	},
-       
 	mouseover: function(models) {
 		var that = this;
 		R.map(function(model){
@@ -374,6 +283,6 @@ var SequenceView = Backbone.View.extend({
 	},
 
 	_getSpans: function(model) {
-		return this.$el.find('span[name=' + model.get('name') + ']');
+		return this.$el.find('span[data-cid=' + model.cid + ']');
 	}
 });

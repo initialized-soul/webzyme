@@ -37,7 +37,7 @@ var SequenceSearchView = Backbone.View.extend({
 		    if (match.index === regex.lastIndex) {
 		        regex.lastIndex++;
 		    }
-		    that.highlightMatch(tab, match);
+		    that._highlightMatch(tab, match);
 		    that._removeError();
 		}
 	},
@@ -53,12 +53,14 @@ var SequenceSearchView = Backbone.View.extend({
 		});
 	},
 
-	highlightMatch: function(currentTab, match) {
+	_highlightMatch: function(currentTab, match) {
 		F.Maybe(currentTab).bind(function(tab) {
 			var collection = tab.get('highlightCollection');
-			var range = [match.index, match.index + match[0].length];
+			var range = [
+                match.index, 
+                match.index + match[0].length - 1
+            ];
 			collection.add({
-				'name' : collection.generateSpanName(range),
 				'range' : range,
 				'text' : match[0],
 				'type' : 'search'

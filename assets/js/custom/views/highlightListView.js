@@ -38,7 +38,7 @@ var HighlightListView = Backbone.View.extend({
 
 	mouseHoverSequence: function(event, mouseInFlag) {
 		this._getHighlightModelMaybe(event).bind(function(model) {
-			var $spanEl = $('span[name=' + model.get('name') + ']');
+			var $spanEl = $('span[data-cid=' + model.cid + ']');
             var hoverClass = 'sequence-highlight-hover-' + model.getCssClass();
             if (mouseInFlag) {
                 $spanEl.addClass(hoverClass);

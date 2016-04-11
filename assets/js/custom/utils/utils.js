@@ -18,7 +18,7 @@ function getNumLineColumns(x) {
 };
 
 function getNumLineSpaces(x, isStart) {
-    var index = isStart ? x : x - 1;
+    var index = x; //isStart ? x : x - 1;
     if (x > 0) {
         return Math.floor(index / 10);
     }

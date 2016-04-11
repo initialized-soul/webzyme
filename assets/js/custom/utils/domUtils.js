@@ -32,6 +32,10 @@ var Dom = {
     
     joinTextNodes: R.compose(R.join(''), R.pluck('nodeValue')),
     
+    getTextChildNode: function(el) {
+        return R.head(this.getTextChildNodes(el));
+    },
+    
     getTextChildNodes: function(el) {
         return $.map(el.childNodes, this.getTextNodeOrNull); 
     },
