@@ -23,51 +23,33 @@ var HighlightCollection = Backbone.Collection.extend({
 	},
     
 	createDocumentRange: function(range) {
-		var rangeEl = document.createRange();
-		var startSpan = this._getDeepestSpan(range[0]);
-		var endSpan = this._getDeepestSpan(range[1]);
-		var startNode = this._getTextNode(startSpan, range[0], true);
-		var endNode = this._getTextNode(endSpan, range[1], false); var_dump([range[0], range[1], startNode[1], endNode[1], startSpan.getAttribute('data-cid'), endSpan.getAttribute('data-cid'), startNode[2]]);
-		rangeEl.setStart(startNode[0], startNode[1]);
-		rangeEl.setEnd(endNode[0], endNode[1] + 1);
-		return rangeEl;
+		var spacedStart = this._spaced(range[0]);
+		var spacedEnd = this._spaced(range[1]);
+		var startData = this._getTextNodeDataByPosition(spacedStart);
+		var endData = this._getTextNodeDataByPosition(spacedEnd);
+		var startOffset = spacedStart - startData.sequence.length;
+		var endOffset = spacedEnd - endData.sequence.length;
+		return Dom.createRange(startData.node, endData.node, startOffset, endOffset);
 	},
-	
-    _getDeepestSpan: function(index) {
-        var spans = $('span[data-depth]');
-        return R.reduce(function(deepest, span) {
-			if (Dom.intAttr(span, 'data-start') <= index && Dom.intAttr(span, 'data-end') >= index) {
-                if (Dom.intAttr(span, 'data-depth') > Dom.intAttr(deepest, 'data-depth')) {
-					return span;
-				}
-			}
-			return deepest;
-        }, spans[0], spans);
+
+	_getTextNodeDataByPosition: function(spacedPosition) {
+		var textNodes = Dom.getFlattenedTextNodes(this._getMainSpan());
+		var sequence = '';
+		var previousSequence = '';
+		var finalNode = R.find(function(textNode) {
+			previousSequence = sequence;
+			sequence += textNode.nodeValue;
+			return sequence.length > spacedPosition;
+		}, textNodes);
+
+		return {
+			'node': finalNode,
+			'sequence': previousSequence
+		};
 	},
-    
-	_getTextNode: function(span, offset, isStart) {
-		var current = Dom.intAttr(span, 'data-start');
-		var children = span.childNodes;
-		for (var i = 0; i < children.length; i++) {
-			var node = children[i];
-            var length = this._getText(node).length
-			if (Dom.isTextNode(node)) {
-				current += length;
-                if (current >= offset) {
-                    return [
-                        node,
-                        this._spaced(offset, isStart) - this._spaced(current - length)
-                    ];
-                }
-			} else {
-				current = parseInt(node.getAttribute('data-end')) + 1;
-			}
-		}
-		throw 'Cannot find text node for offset ' + offset;
-	},
-    
-	_getText: function(el) {
-		return F.stripWS(el.nodeValue);
+
+	_getMainSpan: function() {
+		return document.getElementsByName('sequence')[0];
 	},
 
 	_spaced: function(index, isStart) {

@@ -1,4 +1,12 @@
 var Dom = {
+
+    createRange: function(startNode, endNode, startOffset, endOffset) {
+        var rangeEl = document.createRange();
+        rangeEl.setStart(startNode, startOffset);
+        rangeEl.setEnd(endNode, endOffset + 1);
+        return rangeEl;
+    },
+
 	getLineCapacity: function(el) {
 		var origText = el.innerHTML;
  		el.innerHTML = 'A';
@@ -15,15 +23,21 @@ var Dom = {
  		return capacity;
  	},
 
- 	getFlattenedChildren: function(el) {
+    getFlattenedHtmlElements: function(el) {
+        return this.getFlattenedChildrenOfType(1, el);
+    },
+
+    getFlattenedTextNodes: function(el) {
+        return this.getFlattenedChildrenOfType(3, el);
+    },
+
+ 	getFlattenedChildrenOfType: function(type, el) {
  		var that = this;
- 		if (el instanceof HTMLElement) {
- 			return R.reduce(function(result, node) {
-				var toAppend = node.childNodes.length > 0 ? that.getFlattenedChildren(node) : [node];
-				return R.concat(result, toAppend);
-			}, [], el.childNodes);
- 		}
- 		return [];
+ 		return R.reduce(function(result, node) {
+            var toAppend = node.nodeType === type ? [node] : [];
+            var children = node.childNodes.length > 0 ? that.getFlattenedChildrenOfType(type, node) : [];
+            return result.concat(toAppend, children);
+        }, [], el.childNodes);
 	},
 
     getText: function(el) {
@@ -50,5 +64,9 @@ var Dom = {
     
     intAttr: function(el, attr) {
         return parseInt(el.getAttribute(attr));
-    }
+    },
+
+    isEqualNode: R.curry(function(node1, node2) {
+        return node1.isEqualNode(node2);
+    })
 };

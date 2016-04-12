@@ -138,22 +138,22 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 	},
 
 	_getSpacedGlobalOffset: function(textNode, offset) {
-		var beforeSpans = this._getLeadingSpans(textNode);
-		var sequence = Dom.joinTextNodes(beforeSpans);
+		var textNodes = this._getLeadingTextNodes(textNode);
+		var sequence = Dom.joinTextNodes(textNodes);
 		return sequence.length + offset;
 	},
 
 	_getUnspacedGlobalOffset: function(textNode, offset) {
-		var beforeSpans = this._getLeadingSpans(textNode);
-		var sequence = F.stripWS(Dom.joinTextNodes(beforeSpans));
+		var textNodes = this._getLeadingTextNodes(textNode);
+		var sequence = F.stripWS(Dom.joinTextNodes(textNodes));
 		var cleanOffset = this._getUnspacedOffset(textNode, offset);
 		return sequence.length + cleanOffset;
 	},
 
-	_getLeadingSpans: function(span) {
-		var allSpans = Dom.getFlattenedChildren(this.el);
-		var index = R.max(0, $.inArray(span, allSpans));
-		return R.take(index, allSpans);
+	_getLeadingTextNodes: function(textNode) {
+		var textNodes = Dom.getFlattenedTextNodes(this.el);
+		var index = R.max(0, R.findIndex(Dom.isEqualNode(textNode), textNodes));
+		return R.take(index, textNodes);
 	},
 
 	_getUnspacedOffset: function(textNode, offset) {
