@@ -23,28 +23,25 @@ var HighlightCollection = Backbone.Collection.extend({
 	},
     
 	createDocumentRange: function(range) {
-		var spacedStart = this._spaced(range[0]);
-		var spacedEnd = this._spaced(range[1]);
-		var startData = this._getTextNodeDataByPosition(spacedStart);
-		var endData = this._getTextNodeDataByPosition(spacedEnd);
-		var startOffset = spacedStart - startData.sequence.length;
-		var endOffset = spacedEnd - endData.sequence.length;
-		return Dom.createRange(startData.node, endData.node, startOffset, endOffset);
+		var start = this.getRangeData(range[0]);
+		var end = this.getRangeData(range[1]);
+		return Dom.createRange(start.node, end.node, start.offset, end.offset);
 	},
 
-	_getTextNodeDataByPosition: function(spacedPosition) {
+	getRangeData: function(offset) {
+		var spacedOffset = this._spaced(offset);
 		var textNodes = Dom.getFlattenedTextNodes(this._getMainSpan());
 		var sequence = '';
 		var previousSequence = '';
 		var finalNode = R.find(function(textNode) {
 			previousSequence = sequence;
 			sequence += textNode.nodeValue;
-			return sequence.length > spacedPosition;
+			return sequence.length > spacedOffset;
 		}, textNodes);
 
 		return {
 			'node': finalNode,
-			'sequence': previousSequence
+			'offset': spacedOffset - previousSequence.length
 		};
 	},
 
@@ -52,8 +49,10 @@ var HighlightCollection = Backbone.Collection.extend({
 		return document.getElementsByName('sequence')[0];
 	},
 
-	_spaced: function(index, isStart) {
-		return index + getNumLineSpaces(index, isStart);
+	_spaced: function(index) {
+		return F.Maybe(index).maybe(0, function(i) {
+			return index + getNumLineSpaces(index);
+		});
 	},
 
 	generateSpanName: function(range, highlightType) {

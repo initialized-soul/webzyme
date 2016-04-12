@@ -1,5 +1,22 @@
 var Dom = {
 
+    getSelection: function() {
+        if (window.getSelection()) {
+            return window.getSelection();
+        } else if (document.selection) {
+            return document.selection;
+        } else {
+            return null;
+        }
+    },
+    
+    placeCursor: function(rangeData) {
+        var range = this.createRange(rangeData.node, rangeData.node, rangeData.offset, rangeData.offset - 1);
+        var selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    },
+
     createRange: function(startNode, endNode, startOffset, endOffset) {
         var rangeEl = document.createRange();
         rangeEl.setStart(startNode, startOffset);
@@ -40,24 +57,8 @@ var Dom = {
         }, [], el.childNodes);
 	},
 
-    getText: function(el) {
-        return this.joinTextNodes(this.getTextChildNodes(el));    
-    },
-    
     joinTextNodes: R.compose(R.join(''), R.pluck('nodeValue')),
-    
-    getTextChildNode: function(el) {
-        return R.head(this.getTextChildNodes(el));
-    },
-    
-    getTextChildNodes: function(el) {
-        return $.map(el.childNodes, this.getTextNodeOrNull); 
-    },
-    
-    getTextNodeOrNull: function(el) {
-        return el.nodeType === 3 ? el : null;
-    },
-    
+   
 	isTextNode: function(el) {
 		return el.nodeType === 3;
 	},

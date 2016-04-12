@@ -17,11 +17,7 @@ function getNumLineColumns(x) {
     return Math.floor(x / charsPerColumn);
 };
 
-function getNumLineSpaces(x, isStart) {
-    var index = x; //isStart ? x : x - 1;
-    if (x > 0) {
-        return Math.floor(index / 10);
-    }
-    return 0;
+function getNumLineSpaces(x) {
+    return x > 0 ? Math.floor(x / 10) : 0;
 }
 

@@ -1,4 +1,4 @@
-var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
+var SequenceView = Backbone.View.extend({
 	
 	defaults: {
 		basicKeys: [
@@ -17,7 +17,15 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 			67, // c (copy)
 			86, // v (paste)
 			88  // x (cut)
-		]
+		],
+		letterKeys: [
+			65, // A
+			67, // C
+			71, // G
+			84, // T   
+			78  // N
+		],
+		arrowKeys: [37, 38, 39, 40]
 	},
 
 	constructor: function (options) {
@@ -26,15 +34,15 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
     },
 
 	events: {
-		'keydown': 'keyDown',
-		'mouseup': 'mouseUp',
-		'keyup': 'keyUp',
-		'paste': 'refreshModel'
+		'keydown': '_keyDown',
+		'mouseup': '_mouseUp',
+		'keyup': '_keyUp',
+		'paste': '_refreshModel'
 	},
 
 	initialize: function(options) {
 		this._initializeContextMenu();
-		this.listenTo(this.model, 'change', this.onModelChange);
+		this.listenTo(this.model, 'change', this._onModelChange);
 		this.listenTo(this.collection, 'add', this._renderHighlights);
 		this.listenTo(this.collection, 'remove', this.removeSpan);
 		this.listenTo(this.collection, 'change', this.mouseover);
@@ -70,7 +78,7 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 		});
  	},
 
- 	keyDown: function(event) {
+ 	_keyDown: function(event) {
         var that = this;
  		if (F.inArray(event.keyCode, this.options.basicKeys)) { // Allow basic keys
  			return true;
@@ -82,7 +90,7 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
       		return false;
     	} else {
             return F.Maybe(this._getUserSelection()).maybeFn(function() {
-                return F.inArray(event.keyCode, [65, 84, 71, 67, 78]); // Allow only ATCGN
+                return F.inArray(event.keyCode, that.options.letterKeys); // Allow only ATCGN
             }, function(selection) {
                 if (event.keyCode === 72) { // highlight
                     that._highlightAction(selection);
@@ -95,28 +103,22 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
     	}
  	},
 
- 	keyUp: function(event) {
-        if (!F.inArray(event.keyCode, [37, 38, 39, 40])){ // Arrow keys
-    		this._displayCaretPosition(this._findCaretPosition());
- 		    this.refreshModel();
+ 	_keyUp: function(event) {
+        if (F.inArray(event.keyCode, this.options.letterKeys)) {
+        	this._saveCaretPosition();
+ 		    this._refreshModel();
+ 		    this._restoreCaretPosition();
+        } else if (F.inArray(event.keyCode, this.options.arrowKeys)) {
+        	this._displayCaretPosition();
         }
  	},
 
- 	refreshModel: function() {
+ 	_refreshModel: function() {
  		this.model.set('sequence', this.el.textContent);
  	},
 
- 	mouseUp: function() {
- 		this._displayCaretPosition(this._findCaretPosition());
- 	},
-
- 	_findCaretPosition: function() {
-         var that = this;
-        return F.Maybe(this._getUserSelection()).maybe('#', function(selection) {
-            var spaced = that._getSpacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
-            var unspaced = that._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
-            return (spaced % 11 === 0) ? '#' : unspaced;
-        });
+ 	_mouseUp: function() {
+ 		this._displayCaretPosition();
  	},
 
 	_highlightAction: function(userSelection) {
@@ -127,7 +129,6 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 				'text' : F.stripWS(selection.text),
 				'type' : 'user'
 			});
-			that._restoreCaretPosition();
         });
 	},
 
@@ -166,7 +167,7 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 	},
 
 	_getUserSelection: function() {
-		return F.Maybe(this._getDocumentSelection()).maybe(null, function(selection) {
+		return F.Maybe(Dom.getSelection()).maybe(null, function(selection) {
             return F.Maybe(selection.toString()).maybe(null, function(text) {
                 return {
                     text: text,
@@ -180,17 +181,7 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
         });
 	},
 
-    _getDocumentSelection: function() {
-        if (window.getSelection()) {
-        	return window.getSelection();
-	    } else if (document.selection) {
-            return document.selection;
-        } else {
-            return null;
-        }
-    },
-
-	onModelChange: function() {
+	_onModelChange: function() {
 		this.collection.reset();
 		this.render();
 	},
@@ -200,7 +191,6 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 		this._printSequence();
         this._adjustRootSpanAttributes();
 		this._printLineNumbers();
-		this._restoreCaretPosition();
 		this._renderHighlights(this.collection.models);
 	},
 
@@ -249,18 +239,53 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 		return (seq.length / x) > 1 ? x : (seq.length % x);
 	},
 
+	_saveCaretPosition: function() {
+		var that = this;
+	 	this.currentCaretPosition = F.Maybe(Dom.getSelection()).maybe(0, function(selection) {
+            return that._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset);
+        });
+	},
+
 	_restoreCaretPosition: function() {
 		this.el.focus();
-		this._displayCaretPosition(1);
-		var range = this.collection.createDocumentRange([0,0]);
-		var selection = window.getSelection();
-		selection.removeAllRanges();
-		selection.addRange(range);
+		var i = this.currentCaretPosition;
+		Dom.placeCursor(this.collection.getRangeData(i));
+		this._displayCaretPosition();
 	},
 	
-	_displayCaretPosition: function(caretPosition) {
+	_displayCaretPosition: function() {
+		var caretPosition = this._findCaretPosition();
  		this.options.currentPositionEl.innerHTML = caretPosition;
  	},
+
+ 	_findCaretPosition: function() {
+        var that = this;
+        return F.Maybe(Dom.getSelection()).maybe('#', function(selection) {
+            var spaced = that._getSpacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+            var unspaced = that._getUnspacedGlobalOffset(selection.focusNode, selection.focusOffset) + 1;
+            return (spaced % 11 === 0) ? '#' : unspaced;
+        });
+ 	},
+
+ 	_renderHighlights: function(models) {
+		var that = this;
+		R.map(function(model) {
+			var rangeEl = that.collection.createDocumentRange(model.get('range'));
+			var selectionContents = rangeEl.extractContents();
+			var spanEl = that.createSequenceSpan(selectionContents, model);
+			rangeEl.insertNode(spanEl);
+            model.set('span', spanEl);
+		}, F.array(models));
+		this._cleanTextNodes();
+	},
+    
+    createSequenceSpan: function(contents, model) {
+		var span = document.createElement('span');
+		span.appendChild(contents);
+		span.setAttribute('class', 'sequence-highlight sequence-highlight-' + model.getCssClass());
+		span.setAttribute('data-cid', model.cid);
+		return span;
+	},
 
 	removeSpan: function(models) {
 		var that = this;
@@ -270,6 +295,25 @@ var SequenceView = Backbone.View.extend(SequenceViewHighlightRenderer).extend({
 		this._cleanTextNodes();
 	},
     
+    _cleanTextNodes: function() {
+		var that = this;
+		this._concatenateBrokenText(this.el);
+		this.$el.find('*').each(function(index, el) {
+			that._simplifyNode(el);
+		});
+	},
+    
+    _simplifyNode: function(el) {
+		this._concatenateBrokenText(el);
+		F.Maybe(el.childNodes[0]).onNothing(function() {
+			el.parentNode.removeChild(el);
+		});
+	},
+    
+    _concatenateBrokenText: function(el) {
+		el.normalize();
+	},
+
 	mouseover: function(models) {
 		var that = this;
 		R.map(function(model){
