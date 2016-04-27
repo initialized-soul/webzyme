@@ -32,6 +32,9 @@ var jsFilesToInject = [
   // Load underscore before backbone
   'js/dependencies/underscore-min.js',
 
+  // load tether before bootstrap
+  'js/dependencies/tether.min.js',
+
   // Dependencies like jQuery, or Angular are brought in here
   'js/dependencies/**/*.js',
 

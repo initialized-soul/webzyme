@@ -1,6 +1,8 @@
+[contenteditable]:focus { outline: 0px solid transparent; }
+
 .banner {
-	background-color: $palette1;
-    min-height: 200px;
+	background: url('/images/banner1.png') no-repeat center center;
+    height: 200px;
 }
 
 .logo {
@@ -16,13 +18,22 @@
 }
 
 .sequence-outer {
-    display: block;
     text-align: center;
 }
 
 .sequence-inner {
-    max-width: 1200px;
-    margin: auto;
+    display: inline-block;
+    .col-xs-2, .sequence-container {width: 4ch !important;}
+    .col-xs-8, .sequence-container {width: 32ch !important;}
+    .col-md-1, .sequence-container {width: 6ch !important;}
+    .col-md-10, .sequence-container {width: 65ch !important;}
+    .col-lg-1 {width: 10ch !important;}
+    .col-lg-10 {width: 109ch !important;}
+}
+ 
+.sequence-container {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
 }
 
 .sequence-font {
@@ -34,19 +45,19 @@
     border-radius: 6px;
 }
 
-$sequence-highlight-alpha:          0.3;
-.sequence-highlight-primary {       background: rgba($brand-primary, $sequence-highlight-alpha);}
-.sequence-highlight-info {          background: rgba($brand-info, $sequence-highlight-alpha);}
-.sequence-highlight-success {       background: rgba($brand-success, $sequence-highlight-alpha);}
-.sequence-highlight-warning {       background: rgba($brand-warning, $sequence-highlight-alpha);}
-.sequence-highlight-danger {        background: rgba($brand-danger, $sequence-highlight-alpha);}
+$sequence-highlight-alpha:    0.3;
+.sequence-highlight-primary { background: rgba($brand-primary, $sequence-highlight-alpha); }
+.sequence-highlight-info    { background: rgba($brand-info, $sequence-highlight-alpha);    }
+.sequence-highlight-success { background: rgba($brand-success, $sequence-highlight-alpha); }
+.sequence-highlight-warning { background: rgba($brand-warning, $sequence-highlight-alpha); }
+.sequence-highlight-danger  { background: rgba($brand-danger, $sequence-highlight-alpha);  }
 
 $sequence-highlight-hover-alpha:    1.0;
-.sequence-highlight-hover-primary { background: rgba($brand-primary, $sequence-highlight-hover-alpha);}
-.sequence-highlight-hover-info {    background: rgba($brand-info, $sequence-highlight-hover-alpha);}
-.sequence-highlight-hover-success { background: rgba($brand-success, $sequence-highlight-hover-alpha);}
-.sequence-highlight-hover-warning { background: rgba($brand-warning, $sequence-highlight-hover-alpha);}
-.sequence-highlight-hover-danger {  background: rgba($brand-danger, $sequence-highlight-hover-alpha);}
+.sequence-highlight-hover-primary { background: rgba($brand-primary, $sequence-highlight-hover-alpha); }
+.sequence-highlight-hover-info    { background: rgba($brand-info, $sequence-highlight-hover-alpha);    }
+.sequence-highlight-hover-success { background: rgba($brand-success, $sequence-highlight-hover-alpha); }
+.sequence-highlight-hover-warning { background: rgba($brand-warning, $sequence-highlight-hover-alpha); }
+.sequence-highlight-hover-danger  { background: rgba($brand-danger, $sequence-highlight-hover-alpha);  }
 
 .sequence-position {
     margin: 0px;

@@ -1,0 +1,47 @@
+$brand-primary:              #FF0054;
+$brand-success:              #9900ff;
+$brand-info:                 #e0ff3f;
+$brand-warning:              #f0ad4e;
+$brand-danger:               #d9534f;
+
+$palette0:		           	white;
+$palette1:			        #5ebeed;
+$palette2:		        	#a3daf5;
+$palette3:		    	    #e8f6fc;
+
+$body-bg:                   white;
+
+// *************************************************************************************************
+// LOGO AND BANNER
+// *************************************************************************************************
+
+@mixin logo-gradient() {
+    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#505459+0,303235+19,000000+100 */
+background: #505459; /* Old browsers */
+background: -moz-linear-gradient(top,  #505459 0%, #303235 19%, #000000 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top,  #505459 0%,#303235 19%,#000000 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom,  #505459 0%,#303235 19%,#000000 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505459', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+}
+
+// *************************************************************************************************
+// FONTS
+// *************************************************************************************************
+
+@font-face {
+    font-family:            'Sansita One';
+    src:                    url('../fonts/sansita/SansitaOne.ttf');
+}
+                     ;
+$font-family-serif:         'Trebuchet MS', Helvetica, Arial, sans-serif;
+$font-family-monospace:     'Lucida Console', Monaco, monospace;
+$font-family-fancy:         'Sansita One';
+$font-family-base:          'Sansita One';
+
+// *************************************************************************************************
+// PANELS
+// *************************************************************************************************
+
+.panel-heading {
+	padding: 15px;
+}
