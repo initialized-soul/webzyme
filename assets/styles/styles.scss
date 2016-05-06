@@ -1,15 +1,30 @@
 [contenteditable]:focus { outline: 0px solid transparent; }
 
 .banner {
-	background: url('/images/banner1.png') no-repeat center center;
+	background-color: $banner-color;
+    padding-top: 100px;
     height: 200px;
 }
 
 .logo {
-	@include logo-gradient();
-	min-height: 50px;
-    padding: 5px;
-    padding-left: 25px;
+    background: url('/images/logo.png') no-repeat right center;
+    background-size: contain;
+	height: 75px;
+    margin-top: 10px;
+}
+
+.helix-tail {
+    background: url('/images/helix-tail.png') no-repeat right center;
+    background-size: contain;
+    height: 50px;
+}
+
+.helix-repeat {
+    background: url('/images/helix-repeat.png') repeat left center;
+    background-size: contain;
+    height: 50px;
+    width: 100%;
+    display: inline-block;
 }
 
 .fancy-font {
