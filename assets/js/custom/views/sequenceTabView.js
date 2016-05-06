@@ -71,7 +71,7 @@ var SequenceTabView = Backbone.View.extend({
 
 	_createHighlightCollection: function($el, tab) {
 		tab.set('highlightCollection', new HighlightCollection(null, {
-			$parent: this._getSpanByName('sequence', $el).parent(),
+			$sequenceSpan: this._getSpanByName('sequence', $el),
 			sequenceModel: tab.get('sequenceModel')
 		}));
 	},

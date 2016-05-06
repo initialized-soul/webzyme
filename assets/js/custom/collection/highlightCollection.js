@@ -4,7 +4,7 @@ var HighlightCollection = Backbone.Collection.extend({
 	
 	initialize: function(models, options) {
 		this.sequenceModel = options.sequenceModel;
-		this.$parent = options.$parent;
+		this.$sequenceSpan = options.$sequenceSpan;
 		this.rootModel = new Backbone.Model({
 			range: [
                 0,
@@ -30,7 +30,7 @@ var HighlightCollection = Backbone.Collection.extend({
 
 	getRangeData: function(offset) {
 		var spacedOffset = this._spaced(offset);
-		var textNodes = Dom.getFlattenedTextNodes(this._getMainSpan());
+		var textNodes = Dom.getFlattenedTextNodes(this.$sequenceSpan.get(0));
 		var sequence = '';
 		var previousSequence = '';
 		var finalNode = R.find(function(textNode) {
@@ -43,10 +43,6 @@ var HighlightCollection = Backbone.Collection.extend({
 			'node': finalNode,
 			'offset': spacedOffset - previousSequence.length
 		};
-	},
-
-	_getMainSpan: function() {
-		return document.getElementsByName('sequence')[0];
 	},
 
 	_spaced: function(index) {

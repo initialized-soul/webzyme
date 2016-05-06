@@ -37,7 +37,7 @@ var SequenceView = Backbone.View.extend({
 		'keydown': '_keyDown',
 		'mouseup': '_mouseUp',
 		'keyup': '_keyUp',
-		'paste': '_refreshModel'
+		'paste': '_onPaste'
 	},
 
 	initialize: function(options) {
@@ -93,8 +93,10 @@ var SequenceView = Backbone.View.extend({
                 return F.inArray(event.keyCode, that.options.letterKeys); // Allow only ATCGN
             }, function(selection) {
                 if (event.keyCode === 72) { // highlight
+                	event.preventDefault();
                     that._highlightAction(selection);
                 } else if (event.keyCode === 78) { // new sequence
+                	event.preventDefault();
                     that._toNewSequence(selection);
                 }
                 that.options.$contextMenuEl.removeClass('open');
@@ -111,6 +113,16 @@ var SequenceView = Backbone.View.extend({
         } else if (F.inArray(event.keyCode, this.options.arrowKeys)) {
         	this._displayCaretPosition();
         }
+ 	},
+
+ 	_onPaste: function(event) {
+ 		var that = this;
+ 		event.preventDefault();
+ 		F.Maybe(event.originalEvent).bind(function(clipboardEvent) {
+ 			var text = clipboardEvent.clipboardData.getData('text/plain');
+    		document.execCommand('insertText', false, text);
+    		that._refreshModel();
+ 		});
  	},
 
  	_refreshModel: function() {
@@ -196,7 +208,7 @@ var SequenceView = Backbone.View.extend({
 
 	_calculateLineProperties: function() {
 		this.line = {};
-		this.line.capacity = Dom.getLineCapacity(this.el); var_dump(this.line.capacity);
+		this.line.capacity = Dom.getLineCapacity(this.el);
 		this.line.nColumns = getNumLineColumns(this.line.capacity);
 	},
 
