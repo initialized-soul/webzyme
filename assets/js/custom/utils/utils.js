@@ -13,8 +13,8 @@ function var_dump(obj) {
 };
 
 function getNumLineColumns(x) {
-    var charsPerColumn = 11;
-    return Math.floor(x / charsPerColumn);
+    var charsPerColumnWithoutSpaces = 10;
+    return Math.floor(x / charsPerColumnWithoutSpaces);
 };
 
 function getNumLineSpaces(x) {

@@ -208,7 +208,7 @@ var SequenceView = Backbone.View.extend({
 
 	_calculateLineProperties: function() {
 		this.line = {};
-		this.line.capacity = Dom.getLineCapacity(this.el);
+		this.line.capacity = Dom.getLineCapacity(this.el); var_dump(this.line.capacity);
 		this.line.nColumns = getNumLineColumns(this.line.capacity);
 	},
 
