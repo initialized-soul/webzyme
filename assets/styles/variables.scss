@@ -29,14 +29,32 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505459', end
 // *************************************************************************************************
 
 @font-face {
-    font-family:            'Sansita One';
-    src:                    url('../fonts/sansita/SansitaOne.ttf');
+    font-family:            'Lato';
+    src:                    url('../fonts/lato/Lato-Regular.ttf');
 }
-                     ;
+
+@font-face {
+    font-family:            'Lato';
+    src:                    url('../fonts/lato/Lato-Bold.ttf');
+    font-weight:			bold;
+}
+
+@font-face {
+    font-family:            'Lato';
+    src:                    url('../fonts/lato/Lato-Black.ttf');
+    font-weight:			black;
+}
+
+@font-face {
+    font-family:            'Lato';
+    src:                    url('../fonts/lato/Lato-Italic.ttf');
+    font-style:				italic;
+}
+
 $font-family-serif:         'Trebuchet MS', Helvetica, Arial, sans-serif;
 $font-family-monospace:     'Lucida Console', Monaco, monospace;
-$font-family-fancy:         'Sansita One';
-$font-family-base:          'Sansita One';
+$font-family-fancy:         'Lato';
+$font-family-base:          'Lato';
 
 // *************************************************************************************************
 // PANELS
@@ -45,3 +63,12 @@ $font-family-base:          'Sansita One';
 .panel-heading {
 	padding: 15px;
 }
+
+// *************************************************************************************************
+// NAV BAR
+// *************************************************************************************************
+$navbar-border-radius:              0px;
+$navbar-dark-color:                 darken($brand-primary,20%) !default;
+$navbar-dark-hover-color:           lighten($brand-primary,20%) !default;
+$navbar-dark-active-color:          $brand-primary !default;
+$navbar-dark-disabled-color:        rgba(255,255,255,.25) !default;

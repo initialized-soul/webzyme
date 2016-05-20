@@ -8,5 +8,13 @@ var SequenceModel = Backbone.Model.extend({
 			val = F.DNA(val);
 		}
 		return Backbone.Model.prototype.set.call(this, key, val, options);
+	},
+
+	getShortName: function() {
+		var tokens = this.get('name').split('|');
+		if (tokens.length > 1) {
+			return F.Maybe(tokens[0]).def('Shortname');
+		}
+		return 'Shortname';
 	}
 });

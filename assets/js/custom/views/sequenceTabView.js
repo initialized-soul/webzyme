@@ -42,11 +42,13 @@ var SequenceTabView = Backbone.View.extend({
 		this._addHeader(tab);
 		this._addContent(tab);
 		this.collection.add(tab);
+		this.listenTo(sequenceModel, 'change:name', this._renameTab);
 	},
 
 	_addHeader: function(tab) {
 		var template = JST["assets/templates/sequenceTabHead.html"]({'tab' : tab});
 		$(template).insertBefore(this.$tabRemove);
+		this.$sequenceNameAnchor = $('a[href=#tab_' + tab.get('id') + ']');
 	},
 
 	_addContent: function(tab) {
@@ -60,6 +62,7 @@ var SequenceTabView = Backbone.View.extend({
 		this._createHighlightCollection($el, tab);
 		this._createHighlightListView($el, tab);
 		this._createSequenceView($el, tab);
+		this._createSequenceNameView($el, tab);
 	},
 
 	_createSequencePanelView: function($el, tab) {
@@ -90,12 +93,18 @@ var SequenceTabView = Backbone.View.extend({
 			lineNumsLeftEl: this._getSpanByName('positions_left', $el).get(0),
 			lineNumsRightEl: this._getSpanByName('positions_right', $el).get(0),
 			$contextMenuEl: this._first('div[name=context_menu]', $el),
-			//tabs: this.collection,
 			model: tab.get('sequenceModel'),
 			collection: tab.get('highlightCollection')
 		});
 		this.listenTo(view, 'newsequence', this.addTab);
 		tab.set('sequenceView', view);
+	},
+
+	_createSequenceNameView: function($el, tab) {
+		tab.set('sequenceNameView', new SequenceNameView({
+			el: this._getSpanByName('name', $el),
+			model: tab.get('sequenceModel')
+		}));
 	},
 
 	_getSpanByName: function(name, $el) {
@@ -110,5 +119,9 @@ var SequenceTabView = Backbone.View.extend({
 	_tabShownEvent: function(event) {
 		var tab = this.collection.get(event.target.getAttribute('data-id'));
 		tab.get('sequenceView').render();
+	},
+
+	_renameTab: function(model) {
+		this.$sequenceNameAnchor.html(model.getShortName());
 	}
 });

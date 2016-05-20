@@ -1,9 +1,10 @@
 [contenteditable]:focus { outline: 0px solid transparent; }
 
 .banner {
-	background-color: $banner-color;
-    padding-top: 100px;
+	background: linear-gradient(to bottom, #eeffc9 0%,#badee2 17%,#339696 46%,#003a33 75%,#000000 95%,#000000 100%);
+    padding-top: 110px;
     height: 200px;
+    margin-bottom: 0px;
 }
 
 .logo {
@@ -25,6 +26,10 @@
     height: 50px;
     width: 100%;
     display: inline-block;
+}
+
+.navbar-bg {
+    background-color:   black;
 }
 
 .fancy-font {
