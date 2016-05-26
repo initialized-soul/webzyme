@@ -23,7 +23,7 @@
                         </b>
                     </div>
                     <div class="col-xs-8 col-md-10 col-lg-10 wordwrap sequence-font sequence-container" style="text-align:left">
-                         <span name="sequence" contenteditable="true" data-start="0" data-depth="-1"></span>
+                         <span name="sequence" class="sequence" contenteditable="true" data-start="0" data-depth="-1"></span>
                     </div>
                     <div class="col-xs-2 col-md-1 col-lg-1 sequence-font unselectable" style="text-align:left">
                         <b>
@@ -36,14 +36,18 @@
 
 	</div>
 
-	<div class="wordwrap container-fluid">
-	    <ul class="list-group"></ul>
-	</div>
+    <div class="panel panel-default" style="padding-bottom: 10px">
+        <div class="panel-body container-fluid">
+            <div class="wordwrap">
+                <ul class="list-group"></ul>
+            </div>
+        </div>
+    </div>
 
 	<div name="context_menu" class="dropdown">
         <ul class="dropdown-menu" role="menu">
-            <li><a tabindex="1" name="highlight">Highlight (h)</a></li>
-            <li><a tabindex="2" name="newSequence">To new sequence (n)</a></li>
+            <li><a tabindex="1" class="dropdown-item" name="highlight">Highlight (<span class="keyboard-shortcut">h</span>)</a></li>
+            <li><a tabindex="2" class="dropdown-item" name="newSequence">To new sequence (<span class="keyboard-shortcut">n</span>)</a></li>
         </ul>
     </div>
 

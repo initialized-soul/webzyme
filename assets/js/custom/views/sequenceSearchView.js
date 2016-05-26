@@ -23,6 +23,10 @@ var SequenceSearchView = Backbone.View.extend({
 	_getCleanSearchText: function() {
 		var text = F.DNA(this.inputEl.value);
 		this.inputEl.value = text;
+		if (text.length < 4) {
+			alert('Search sequence must be at least 4 nucleotides long');
+			return null;
+		}
 		return text;
 	},
 

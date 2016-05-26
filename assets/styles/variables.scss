@@ -1,27 +1,32 @@
-$brand-primary:              #FF0054;
-$brand-success:              #9900ff;
-$brand-info:                 #e0ff3f;
-$brand-warning:              #f0ad4e;
-$brand-danger:               #d9534f;
+$brand-primary:       #af24ff;
+$brand-success:       #99e600;
+$brand-info:          #e0ff3f;
+$brand-warning:       #f0ad4e;
+$brand-danger:        #e6005c;
 
-$palette0:		           	white;
-$palette1:			        #5ebeed;
-$palette2:		        	#a3daf5;
-$palette3:		    	    #e8f6fc;
+$palette0:		        #F7F7F9;
+$palette1:			      #DDDDDD;
+$palette2:		        #636363;
+$palette3:		    	  #E5BAFF;
 
-$body-bg:                   white;
+$body-bg:             white;
+$bg-primary:				  white;
+$bg-secondary:				#323232;
+$bg-tertiary:				  #54003b;
+
+$border-radius:          	0px;
+$border-radius2:          15px;
 
 // *************************************************************************************************
 // LOGO AND BANNER
 // *************************************************************************************************
-$banner-color:				 #000033;
 @mixin logo-gradient() {
-    /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#505459+0,303235+19,000000+100 */
-background: #505459; /* Old browsers */
-background: -moz-linear-gradient(top,  #505459 0%, #303235 19%, #000000 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top,  #505459 0%,#303235 19%,#000000 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom,  #505459 0%,#303235 19%,#000000 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505459', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e5baff+0,c972ff+50,c560ff+51,af24ff+100 */
+  background: #e5baff; /* Old browsers */
+  background: -moz-linear-gradient(top,  #e5baff 0%, #c972ff 50%, #c560ff 51%, #af24ff 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(top,  #e5baff 0%,#c972ff 50%,#c560ff 51%,#af24ff 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom,  #e5baff 0%,#c972ff 50%,#c560ff 51%,#af24ff 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e5baff', endColorstr='#af24ff',GradientType=0 ); /* IE6-9 */
 }
 
 // *************************************************************************************************
@@ -29,32 +34,20 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#505459', end
 // *************************************************************************************************
 
 @font-face {
-    font-family:            'Lato';
-    src:                    url('../fonts/lato/Lato-Regular.ttf');
+    font-family:            'Worksans';
+    src:                    url('../fonts/worksans/WorkSans-Bold.ttf');
 }
 
 @font-face {
-    font-family:            'Lato';
-    src:                    url('../fonts/lato/Lato-Bold.ttf');
+    font-family:            'Worksans';
+    src:                    url('../fonts/worksans/WorkSans-Black.ttf');
     font-weight:			bold;
-}
-
-@font-face {
-    font-family:            'Lato';
-    src:                    url('../fonts/lato/Lato-Black.ttf');
-    font-weight:			black;
-}
-
-@font-face {
-    font-family:            'Lato';
-    src:                    url('../fonts/lato/Lato-Italic.ttf');
-    font-style:				italic;
 }
 
 $font-family-serif:         'Trebuchet MS', Helvetica, Arial, sans-serif;
 $font-family-monospace:     'Lucida Console', Monaco, monospace;
-$font-family-fancy:         'Lato';
-$font-family-base:          'Lato';
+$font-family-fancy:         'Worksans';
+$font-family-base:          'Worksans';
 
 // *************************************************************************************************
 // PANELS
@@ -66,9 +59,56 @@ $font-family-base:          'Lato';
 
 // *************************************************************************************************
 // NAV BAR
-// *************************************************************************************************
-$navbar-border-radius:              0px;
-$navbar-dark-color:                 darken($brand-primary,20%) !default;
-$navbar-dark-hover-color:           lighten($brand-primary,20%) !default;
-$navbar-dark-active-color:          $brand-primary !default;
+// *************************************************************************************************                     
+$navbar-dark-color:                 white !default;
+$navbar-dark-hover-color:           $palette3 !default;
+$navbar-dark-active-color:          $palette3 !default;
 $navbar-dark-disabled-color:        rgba(255,255,255,.25) !default;
+
+.nav-tabs .nav-link {
+	background-color: $palette0;
+	&.active {
+		background-color: $palette1 !important;
+		color: darken($brand-primary,25%) !important;
+	}
+}
+
+.nav-tabs .nav-item {
+  margin-left: 0px !important;
+}
+
+// *************************************************************************************************
+// BUTTONS
+// *************************************************************************************************
+$btn-primary-color:              $brand-primary !default;
+$btn-primary-bg:                 $bg-primary !default;
+
+
+// *************************************************************************************************
+// GRID
+// *************************************************************************************************
+
+// Grid breakpoints
+//
+// Define the minimum and maximum dimensions at which your layout will change,
+// adapting to different screen sizes, for use in media queries.
+
+$grid-breakpoints: (
+  xs: 0,		// Extra small screen / phone
+  sm: 544px, 	// Small screen / phone
+  md: 768px,	// Medium screen / tablet
+  lg: 1200px,	// Large screen / desktop
+  xl: 1400px	// Extra large screen / wide desktop
+) !default;
+
+
+// Grid containers
+//
+// Define the maximum width of `.container` for different screen sizes.
+
+$container-max-widths: (
+  sm: 576px,
+  md: 720px,
+  lg: 1140px,
+  xl: 1300px
+) !default;

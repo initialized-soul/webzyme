@@ -1,35 +1,21 @@
 [contenteditable]:focus { outline: 0px solid transparent; }
 
+.color-success {color: $brand-success;}
+.color-dark {color: $bg-secondary;}
+
 .banner {
-	background: linear-gradient(to bottom, #eeffc9 0%,#badee2 17%,#339696 46%,#003a33 75%,#000000 95%,#000000 100%);
-    padding-top: 110px;
-    height: 200px;
+    @include logo-gradient();
+    padding: 20px 20px 20px 50px;
     margin-bottom: 0px;
 }
 
 .logo {
-    background: url('/images/logo.png') no-repeat right center;
-    background-size: contain;
-	height: 75px;
-    margin-top: 10px;
-}
-
-.helix-tail {
-    background: url('/images/helix-tail.png') no-repeat right center;
-    background-size: contain;
-    height: 50px;
-}
-
-.helix-repeat {
-    background: url('/images/helix-repeat.png') repeat left center;
-    background-size: contain;
-    height: 50px;
-    width: 100%;
-    display: inline-block;
+    max-width: 100%;
+    max-height: 100%;
 }
 
 .navbar-bg {
-    background-color:   black;
+    background-color:   $bg-secondary;
 }
 
 .fancy-font {
@@ -42,6 +28,8 @@
 }
 
 .sequence-inner {
+    background-color: white;
+    border-radius: $border-radius2;
     display: inline-block;
     .col-xs-2, .sequence-container {width: 4ch !important;}
     .col-xs-8, .sequence-container {width: 32ch !important;}
@@ -51,6 +39,10 @@
     .col-lg-10 {width: 109ch !important;}
 }
  
+.sequence-tabs {
+    background-color: $palette1;
+}
+
 .sequence-container {
     padding-left: 0px !important;
     padding-right: 0px !important;
@@ -59,10 +51,15 @@
 .sequence-font {
 	font-family: $font-family-monospace;
 	font-weight: bold;
+    color: black;
 }
 
 .sequence-highlight {
     border-radius: 6px;
+}
+
+.sequence {
+    color: $palette2;
 }
 
 $sequence-highlight-alpha:    0.3;
@@ -84,7 +81,7 @@ $sequence-highlight-hover-alpha:    1.0;
     display: inline;
 }
 
-.search-error {color: red;}
+.search-error {color: $brand-danger;}
 
 .wordwrap {word-wrap: break-word;}
 
@@ -98,4 +95,30 @@ $sequence-highlight-hover-alpha:    1.0;
 
 .bold {
     font-weight: bold;
+}
+
+.dropdown-menu {
+    background-color: $palette0;
+    width: 230px;
+    padding: 5px;
+    li {
+        background-color: white;
+        padding: 5px;
+    }
+}
+
+.dropdown-item {
+    color: $bg-secondary;
+}
+
+.keyboard-shortcut {
+    color: $brand-primary;
+}
+
+.list-group-item {
+    border-radius: $border-radius2 !important;
+}
+
+.label-fullsize {
+  font-size: 100% !important;
 }

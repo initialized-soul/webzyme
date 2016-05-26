@@ -21,6 +21,7 @@ var SequenceTabView = Backbone.View.extend({
 
 	_removeTabButton: function() {
 		var $active = this.$headers.find('li a.active');
+		$active.parent().prev().children().first().click();
 		var id = $active.data('id');
 		$active.parent().andSelf().remove();
 		this.$content.children('#tab_' + id).remove();
@@ -29,7 +30,7 @@ var SequenceTabView = Backbone.View.extend({
 
 	_addTabButton: function() {
 		this.addTab(new SequenceModel({
-			name: 'Sequence',
+			name: 'Shortname | Full Sequence Name',
 			sequence: 'ATGC'
 		}));
 	},
